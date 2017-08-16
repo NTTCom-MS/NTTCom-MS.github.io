@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.9.9
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "README";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="puppet_manifest_list_link"
+        href="puppet_manifest_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'>
+<h1 id="label-postgresql">postgresql</h1>
+
+<p><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"></p>
+
+<p><strong>NTTCom-MS/eyp-postgresql</strong>: <a
+href="https://travis-ci.org/NTTCom-MS/eyp-postgresql"><img
+src="https://travis-ci.org/NTTCom-MS/eyp-postgresql.png?branch=master"></a></p>
+
+<h4 id="label-Table+of+Contents">Table of Contents</h4>
+<ol><li>
+<p><a href="#overview">Overview</a></p>
+</li><li>
+<p><a href="#module-description">Module Description</a></p>
+</li><li>
+<p><a href="#setup">Setup</a></p>
+<ul><li>
+<p><a href="#what-postgresql-affects">What postgresql affects</a></p>
+</li><li>
+<p><a href="#setup-requirements">Setup requirements</a></p>
+</li><li>
+<p><a href="#beginning-with-postgresql">Beginning with postgresql</a></p>
+</li></ul>
+</li><li>
+<p><a href="#usage">Usage</a></p>
+</li><li>
+<p><a href="#reference">Reference</a></p>
+</li><li>
+<p><a href="#limitations">Limitations</a></p>
+</li><li>
+<p><a href="#development">Development</a></p>
+<ul><li>
+<p><a href="#todo">TODO</a></p>
+</li><li>
+<p><a href="#contributing">Contributing</a></p>
+</li></ul>
+</li></ol>
+
+<h2 id="label-Overview">Overview</h2>
+
+<p>manages postgresql: * standalone * streaming replication</p>
+
+<h2 id="label-Module+Description">Module Description</h2>
+
+<p>Installs and configures PostgreSQL on CentOS 6</p>
+
+<h2 id="label-Setup">Setup</h2>
+
+<h3 id="label-What+postgresql+affects">What postgresql affects</h3>
+<ul><li>
+<p>Installs PostgreSQL:</p>
+</li><li>
+<p>configures:</p>
+</li><li>
+<p>postgres.conf</p>
+</li><li>
+<p>pg_hba</p>
+</li><li>
+<p>pg_stat_statements</p>
+</li><li>
+<p>it can manage the following DB objects:</p>
+</li><li>
+<p>roles</p>
+</li><li>
+<p>schemas</p>
+</li><li>
+<p>if eyp-sysctl is present:</p>
+</li><li>
+<p>overcommit_memory = 2 - total virtual address space on the system is
+limited to <em>(SWAP + RAM ·( /proc/sys/vm/overcommit_ratio /100))</em></p>
+</li><li>
+<p>shmmax: maximum size of shared memory segment (default:
+ceiling(sprintf(&#39;%f&#39;, $::memorysize_mb)·786432))</p>
+</li><li>
+<p>shmall: total amount of shared memory available (default:
+ceiling(ceiling(sprintf(&#39;%f&#39;,$::memorysize_mb)·786432)/$::eyp_postgresql_pagesize))</p>
+</li></ul>
+
+<h3 id="label-Setup+Requirements">Setup Requirements</h3>
+
+<p>This module requires pluginsync enabled and <strong>optionally</strong>
+<em>eyp/sysctl</em> module installed. Mountpoints <strong>must</strong> be
+already in place (datadir, archive_dir…)</p>
+
+<h3 id="label-Beginning+with+postgresql">Beginning with postgresql</h3>
+
+<p>Currently, it only supports PostgreSQL 9.2 (check TODO list)</p>
+
+<h2 id="label-Usage">Usage</h2>
+
+<p>streaming replication setup:</p>
+
+<pre class="code ruby"><code class="ruby">node &#39;pgm&#39;
+{
+	#.29
+
+	class { &#39;sysctl&#39;: }
+
+	class { &#39;postgresql&#39;:
+		wal_level =&gt; &#39;hot_standby&#39;,
+		max_wal_senders =&gt; &#39;3&#39;,
+		checkpoint_segments =&gt; &#39;8&#39;,
+		wal_keep_segments =&gt; &#39;8&#39;,
+	}
+
+	postgresql::hba_rule { &#39;test&#39;:
+		user =&gt; &#39;replicator&#39;,
+		database =&gt; &#39;replication&#39;,
+		address =&gt; &#39;192.168.56.0/24&#39;,
+	}
+
+	postgresql::role { &#39;replicator&#39;:
+		replication =&gt; true,
+		password =&gt; &#39;replicatorpassword&#39;,
+	}
+
+	postgresql::schema { &#39;jordi&#39;:
+		owner =&gt; &#39;replicator&#39;,
+	}
+
+}
+
+node &#39;pgs&#39;
+{
+	#.30
+
+	class { &#39;sysctl&#39;: }
+
+	class { &#39;postgresql&#39;:
+		wal_level =&gt; &#39;hot_standby&#39;,
+		max_wal_senders =&gt; &#39;3&#39;,
+		checkpoint_segments =&gt; &#39;8&#39;,
+		wal_keep_segments =&gt; &#39;8&#39; ,
+		hot_standby =&gt; true,
+		initdb =&gt; false,
+	}
+
+	class { &#39;postgresql::streaming_replication&#39;:
+		masterhost     =&gt; &#39;192.168.56.29&#39;,
+		masterusername =&gt; &#39;replicator&#39;,
+		masterpassword =&gt; &#39;replicatorpassword&#39;,
+	}
+}</code></pre>
+
+<p>backup configurtion:</p>
+
+<pre class="code ruby"><code class="ruby">postgresql::pgdumpbackup { &quot;backup logic&quot;:
+  destination =&gt; &#39;/backup&#39;,
+  mailto =&gt; &#39;backup_notifications@systemadmin.es&#39;,
+  idhost =&gt; &#39;postgresmaster01&#39;,
+}
+</code></pre>
+
+<p>postgresmaster using hiera:</p>
+
+<pre class="code ruby"><code class="ruby">---
+classes:
+  - postgresql
+  - postgresql::pgstatsstatements
+postgresql::port: 60901
+postgresql::wal_level: hot_standby
+postgresql::max_wal_senders: 3
+postgresql::checkpoint_segments: 16
+postgresql::wal_keep_segments: 8
+postgresql::archive_mode: true
+postgresql::max_connections: 200
+postgresql::archive_mode: true
+postgresql::archive_command_custom: &#39;rsync --exclude lost+found -a %p barman@192.168.52.21:/var/lib/barman/pgm/incoming/%f&#39;
+postgresql::shared_preload_libraries:
+  - pg_stat_statements
+postgresroles:
+  extension:
+    password: &#39;1234&#39;
+    port: 60901
+  extension_ro:
+    password: &#39;1234&#39;
+    port: 60901
+  extension_rw:
+    password: &#39;1234&#39;
+    port: 60901
+  replicator:
+    port: 60901
+    password: &#39;1234&#39;
+    replication: true
+postgresschemas:
+  extension:
+    owner: extension
+    port: 60901</code></pre>
+
+<p>postgres slave using hiera:</p>
+
+<pre class="code ruby"><code class="ruby">---
+classes:
+  - postgresql
+  - postgresql::pgstatsstatements
+  - postgresql::streaming_replication
+postgresql::port: 60901
+postgresql::wal_level: hot_standby
+postgresql::max_wal_senders: 3
+postgresql::checkpoint_segments: 16
+postgresql::wal_keep_segments: 8
+postgresql::archive_mode: true
+postgresql::max_connections: 200
+postgresql::initdb: false
+postgresql::hot_standby: true
+postgresql::shared_preload_libraries:
+  - pg_stat_statements
+postgresql::streaming_replication::masterhost: 192.168.52.20
+postgresql::streaming_replication::masterport: 60901
+postgresql::streaming_replication::masterusername: replicator
+postgresql::streaming_replication::masterpassword: af35dbf3394b2b961fea37db2b2bfb0c</code></pre>
+
+<p>hba rules using hiera:</p>
+
+<pre class="code ruby"><code class="ruby">---
+hbarules:
+  barman:
+    user: postgres
+    database: all
+    address: &#39;192.168.52.21/32&#39;
+    auth_method: trust
+  replicator:
+    user: replicator
+    database: replication
+    address: &#39;192.168.52.0/24&#39;
+  nagios:
+    user: nagios
+    database: nagios
+    address: &#39;1.2.3.4/32&#39;
+  nagiospre:
+    user: nagios
+    database: nagios
+    address: &#39;1.2.3.4/32&#39;
+  extension:
+    user: extension
+    database: extension
+    address: &#39;192.168.52.0/24&#39;
+  extensionRO:
+    user: extension_ro
+    database: extension
+    address: &#39;192.168.52.0/24&#39;
+  extensionRW:
+    user: extension_rw
+    database: extension
+    address: &#39;192.168.52.0/24&#39;</code></pre>
+
+<h2 id="label-Reference">Reference</h2>
+
+<h3 id="label-classes">classes</h3>
+
+<h4 id="label-postgresql">postgresql</h4>
+
+<p>It uses the following (private) classes to install, configure and manage
+PostgreSQL:</p>
+<ul><li>
+<p><strong>postgresql::install</strong>: Installation and initdb</p>
+</li><li>
+<p><strong>postgresql::config</strong>: Modifies configuration files</p>
+</li><li>
+<p><strong>postgresql::service</strong>: Manages postgres service</p>
+</li></ul>
+
+<p>Options: * <strong>version</strong>: version to install (default: 9.2) *
+<strong>datadir</strong>: datadir to use (default: /var/lib/pgsql/9.2/data)
+* <strong>initdb</strong>: boolean, true to create datadir&#39;s directies.
+In a standby server with streaming replication you want to set it to false
+(default: true) * <strong>manage_service</strong>: boolean, true to manage
+PostgreSQL&#39;s service (default: true) *
+<strong>archive_command_custom</strong>: custom archive command *
+<strong>archive_dir</strong>: archive dir, if archive_command_custom is
+undef, it will be: <em>test ! -f $archive_dir/%f &amp;&amp; cp %p
+$archive_dir/%f</em> * <strong>archive_dir_user</strong>: archive dir
+user (default: undef) * <strong>archive_dir_group</strong>: archive dir
+group (default: undef) * <strong>archive_dir_mode</strong>: archive dir
+mode (default: undef) * <strong>archive_dir_chmod</strong>: chmod to this
+mask if using archive_dir (default: undef) *
+<strong>overcommit_memory</strong>: modes available:  * undef: do not
+change it  * 0: heuristic overcommit (this is the default)  * 1: always
+overcommit, never check  * 2: always check, never overcommit(default:
+2)&#39;, * <strong>shmmax</strong>: maximum size of shared memory segment
+(default: ceiling(sprintf(&#39;%f&#39;, $::memorysize_mb)·786432)) you can
+set it to undef to disable * <strong>shmall</strong>: total amount of
+shared memory available (default:
+ceiling(ceiling(sprintf(&#39;%f&#39;,$::memorysize_mb)·786432)/$::eyp_postgresql_pagesize))
+you can set it to undef to disable * for directly mapped variables
+(lc_messages, listen, port…) check postgres documentation:  * port
+(default: 5432)  * listen (default: *)  * max_connections (default: 100)  *
+wal_level (default: hot_standby)  * max_wal_senders (default: 0)  *
+checkpoint_segments (default: 16)  * wal_keep_segments (default: 0)  *
+hot_standby  * pidfile  * log_directory  * log_filename  * track_activities
+* track_counts  * autovacuum  * autovacuum_vacuum_scale_factor  *
+autovacuum_vacuum_threshold  * autovacuum_analyze_scale_factor  *
+autovacuum_analyze_threshold  * timezone  * log_timezone  *
+superuser_reserved_connections  * archive_mode  * archive_timeout  *
+archived_wals_retention  * archived_wals_hour  * archived_wals_minute  *
+archived_wals_month  * archived_wals_monthday  * archived_wals_weekday  *
+maintenance_work_mem  * wal_buffers  * work_mem  * shared_buffers
+(autocalculated to 1/4 main RAM)  * lc_messages (default: C)  * lc_monetary
+(default: en_US.UTF-8)  * lc_numeric (default: en_US.UTF-8)  * lc_time
+(default: en_US.UTF-8)  * default_text_search_config (default:
+pg_catalog.english)  * shared_preload_libraries (default: undef)</p>
+
+<p>usage example:</p>
+
+<pre class="code ruby"><code class="ruby">class { &#39;postgresql&#39;: }
+</code></pre>
+
+<h4 id="label-postgresql%3A%3Astreaming_replication">postgresql::streaming_replication</h4>
+<ul><li>
+<p><strong>masterhost</strong>: required, postgres master</p>
+</li><li>
+<p><strong>masterusername</strong>: required, replication username</p>
+</li><li>
+<p><strong>masterpassword</strong>: required, replication password</p>
+</li><li>
+<p><strong>masterport</strong> (default: port_default)</p>
+</li><li>
+<p><strong>datadir</strong> (default: datadir_default)</p>
+</li><li>
+<p><strong>restore_command</strong>: (default: undef)</p>
+</li></ul>
+
+<p>It requires to have <strong>pg_basebackup</strong> and the defined username
+already created on the master DB</p>
+
+<p>usage example:</p>
+
+<pre class="code ruby"><code class="ruby">class { &#39;postgresql::streaming_replication&#39;:
+  masterhost     =&gt; &#39;192.168.56.29&#39;,
+  masterusername =&gt; &#39;replicator&#39;,
+  masterpassword =&gt; &#39;replicatorpassword&#39;,
+}
+</code></pre>
+
+<h4 id="label-postgresql%3A%3Apgstatsstatements">postgresql::pgstatsstatements</h4>
+
+<p>Enable pg_stats_statements:</p>
+<ul><li>
+<p><strong>track_utility</strong>: (default: true)</p>
+</li><li>
+<p><strong>track</strong>: (default: all)</p>
+</li><li>
+<p><strong>max</strong>: (default: 10000)</p>
+</li></ul>
+
+<p>usage example:</p>
+
+<pre class="code ruby"><code class="ruby">class { &#39;postgresql::pgstatsstatements&#39;: }
+</code></pre>
+
+<h3 id="label-defines">defines</h3>
+
+<h4 id="label-postgresql%3A%3Arole">postgresql::role</h4>
+
+<p>manages roles (alias users):</p>
+<ul><li>
+<p><strong>rolename</strong>: role to define (default: resource&#39;s name)</p>
+</li><li>
+<p><strong>password</strong>: password for this role (if it&#39;s not a group)</p>
+</li><li>
+<p><strong>login</strong>: boolean, enable or disable login grant (default:
+true)</p>
+</li><li>
+<p><strong>superuser</strong> boolean, enable or disable superuser grant
+(default: false)</p>
+</li><li>
+<p><strong>replication</strong> boolean, enable or disable replication grant
+(default: false)</p>
+</li></ul>
+
+<p>usage example:</p>
+
+<pre class="code ruby"><code class="ruby">postgresql::role { &#39;jordi&#39;:
+  superuser =&gt; true,
+  password =&gt; &#39;fuckyeah&#39;,
+}
+</code></pre>
+
+<h4 id="label-postgresql%3A%3Aschema">postgresql::schema</h4>
+
+<p>Manages schemas:</p>
+<ul><li>
+<p><strong>schemaname</strong>: schema to create (default: resource&#39;s
+name)</p>
+</li><li>
+<p><strong>owner</strong>: required, schema&#39;s owner</p>
+</li></ul>
+
+<p>usage example:</p>
+
+<pre class="code ruby"><code class="ruby">postgresql::schema { &#39;jordidb&#39;:
+  owner =&gt; &#39;jordi&#39;,
+}
+</code></pre>
+
+<h4 id="label-postgresql%3A%3Ahba_rule">postgresql::hba_rule</h4>
+
+<p>creates rules to pg_hba:</p>
+<ul><li>
+<p><strong>user</strong>: “all”, a user name, a group name prefixed with “+”,
+or a comma-separated list thereof. In both the DATABASE and USER fields you
+can also write a file name prefixed with “@” to include names from a
+separate file.</p>
+</li><li>
+<p><strong>database</strong>: “all”, “sameuser”, “samerole”, “replication”, a
+database name, or a comma-separated list thereof. The “all” keyword does
+not match “replication”. Access to replication must be enabled in a
+separate record (see example below).</p>
+</li><li>
+<p><strong>address</strong>: specifies the set of hosts the record matches. It
+can be a host name, or it is made up of an IP address and a CIDR mask that
+is an integer (between 0 and 32 (IPv4) or 128 (IPv6) inclusive) that
+specifies the number of significant bits in the mask. A host name that
+starts with a dot (.) matches a suffix of the actual host name.
+Alternatively, you can write an IP address and netmask in separate columns
+to specify the set of hosts. Instead of a CIDR-address, you can write
+“samehost” to match any of the server&#39;s own IP addresses, or “samenet”
+to match any address in any subnet that the server is directly connected
+to.</p>
+</li><li>
+<p><strong>type</strong>: it can be set to:</p>
+</li><li>
+<p><strong>local</strong> is a Unix-domain socket</p>
+</li><li>
+<p><strong>host</strong> is either a plain or SSL-encrypted TCP/IP socket,</p>
+</li><li>
+<p><strong>hostssl</strong> is an SSL-encrypted TCP/IP socket</p>
+</li><li>
+<p><strong>hostnossl</strong> is a plain TCP/IP socket. (default: host)</p>
+</li><li>
+<p><strong>auth_method</strong>: can be:</p>
+</li><li>
+<p><strong>trust</strong></p>
+</li><li>
+<p><strong>reject</strong></p>
+</li><li>
+<p><strong>md5</strong> (default)</p>
+</li><li>
+<p><strong>password</strong> (clear text passwords!)</p>
+</li><li>
+<p><strong>gss</strong></p>
+</li><li>
+<p><strong>sspi</strong></p>
+</li><li>
+<p><strong>krb5</strong></p>
+</li><li>
+<p><strong>ident</strong></p>
+</li><li>
+<p><strong>peer</strong></p>
+</li><li>
+<p><strong>pam</strong></p>
+</li><li>
+<p><strong>ldap</strong></p>
+</li><li>
+<p><strong>radius</strong></p>
+</li><li>
+<p><strong>cert</strong></p>
+</li><li>
+<p><strong>auth_option</strong>: set of options for the authentication in the
+format NAME=VALUE. The available options depend on the different
+authentication methods(default: undef)</p>
+</li><li>
+<p><strong>description</strong>: description to identify each rule, see
+example below (default: resource&#39;s name)</p>
+</li><li>
+<p><strong>order</strong>: if any (default: 01)</p>
+</li></ul>
+
+<p>usage example:</p>
+
+<pre class="code ruby"><code class="ruby">postgresql::hba_rule { &#39;test&#39;:
+  user =&gt; &#39;replicator&#39;,
+  database =&gt; &#39;replication&#39;,
+  address =&gt; &#39;192.168.56.0/24&#39;,
+}
+</code></pre>
+
+<p>It will create the following pg_hba rule:</p>
+
+<pre class="code ruby"><code class="ruby"># rule: test
+host	replication	replicator	192.168.56.30/32			md5</code></pre>
+
+<h4 id="label-postgresql%3A%3Apgdumpbackup">postgresql::pgdumpbackup</h4>
+<ul><li>
+<p><strong>destination</strong>: path to store backups</p>
+</li><li>
+<p><strong>pgroot</strong>: Postgres installation base (default: undef)</p>
+</li><li>
+<p><strong>instance</strong>: postgres instance (default: undef)</p>
+</li><li>
+<p><strong>retention</strong>: (default: 7)</p>
+</li><li>
+<p><strong>dbs</strong>: dbs to backup (default: ALL)</p>
+</li><li>
+<p><strong>mailto</strong>: notify by mail (default: undef)</p>
+</li><li>
+<p><strong>idhost</strong>: host ID, if this variabla is set to undef, it will
+use it&#39;s fqdn</p>
+</li><li>
+<p><strong>basedir</strong>: path to install the backup script (default:
+/usr/local/bin)</p>
+</li><li>
+<p><strong>ensure</strong>: presence or absence of this backup script
+(default: present)</p>
+</li><li>
+<p><strong>username</strong>: user to perform backups (default: postgres)</p>
+</li><li>
+<p>cron settings:</p>
+</li><li>
+<p><strong>setcronjob</strong>: create a cronjob (default: true)</p>
+</li><li>
+<p><strong>hour_cronjob</strong>: hour (default: 2)</p>
+</li><li>
+<p><strong>minute_cronjob</strong>: minute (default: 0)</p>
+</li><li>
+<p><strong>month_cronjob</strong>: month (default: undef)</p>
+</li><li>
+<p><strong>monthday_cronjob</strong>: monthday (default: undef)</p>
+</li><li>
+<p><strong>weekday_cronjob</strong>: weekday (default: undef)</p>
+</li></ul>
+
+<p>example setup:</p>
+
+<pre class="code ruby"><code class="ruby">postgresql::pgdumpbackup { &quot;backup logic&quot;:
+  destination =&gt; &#39;/backup&#39;,
+  mailto =&gt; &#39;backup_notifications@systemadmin.es&#39;,
+  idhost =&gt; &#39;postgresmaster01&#39;,
+}
+</code></pre>
+
+<h2 id="label-Limitations">Limitations</h2>
+
+<p>CentOS 6 only</p>
+
+<h2 id="label-Development">Development</h2>
+
+<p>We are pushing to have acceptance testing in place, so any new feature
+should have some tests to check both presence and absence of any feature</p>
+
+<h3 id="label-TODO">TODO</h3>
+<ul><li>
+<p>Add more postgres versions</p>
+</li><li>
+<p>tablespaces management</p>
+</li></ul>
+
+<h3 id="label-Contributing">Contributing</h3>
+<ol><li>
+<p>Fork it</p>
+</li><li>
+<p>Create your feature branch (<code>git checkout -b my-new-feature</code>)</p>
+</li><li>
+<p>Commit your changes (<code>git commit -am &#39;Added some
+feature&#39;</code>)</p>
+</li><li>
+<p>Push to the branch (<code>git push origin my-new-feature</code>)</p>
+</li><li>
+<p>Create new Pull Request</p>
+</li></ol>
+</div></div>
+
+      <div id="footer">
+  Generated on Wed Aug 16 08:55:51 2017 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.9 (ruby-2.1.9).
+</div>
+
+    </div>
+  </body>
+</html>
