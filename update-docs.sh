@@ -18,7 +18,7 @@ do
 done
 
 echo "<html><head></head><body><ul>" > $2/index.html
-for i in $(find $2 -maxdepth 1 -type d | grep -v "^.git$" | cut -f2 -d/);
+for i in $(find $2 -maxdepth 1 -type d | cut -f2 -d/ | grep -v "^.git$" | grep -v "^NTTCom-MS.github.io$");
 do
   echo "<li><a href=\"$i\">$i</a></li>" >> $2/index.html
 done
