@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.9.9
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "README";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="puppet_manifest_list_link"
+        href="puppet_manifest_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'>
+<h1 id="label-barman">barman</h1>
+
+<p><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"></p>
+
+<h4 id="label-Table+of+Contents">Table of Contents</h4>
+<ol><li>
+<p><a href="#overview">Overview</a></p>
+</li><li>
+<p><a href="#module-description">Module Description</a></p>
+</li><li>
+<p><a href="#setup">Setup</a></p>
+<ul><li>
+<p><a href="#what-barman-affects">What barman affects</a></p>
+</li><li>
+<p><a href="#setup-requirements">Setup requirements</a></p>
+</li><li>
+<p><a href="#beginning-with-barman">Beginning with barman</a></p>
+</li></ul>
+</li><li>
+<p><a href="#usage">Usage</a></p>
+</li><li>
+<p><a href="#reference">Reference</a></p>
+</li><li>
+<p><a href="#limitations">Limitations</a></p>
+</li><li>
+<p><a href="#development">Development</a></p>
+<ul><li>
+<p><a href="#todo">TODO</a></p>
+</li><li>
+<p><a href="#contributing">Contributing</a></p>
+</li></ul>
+</li></ol>
+
+<h2 id="label-Overview">Overview</h2>
+
+<p>Manages pgbarman: backup and recovery manager for PostgreSQL databases.</p>
+
+<h2 id="label-Module+Description">Module Description</h2>
+
+<p>This module installs barman and configures backups.</p>
+
+<p>Limitations: * It does <strong>NOT</strong> support slave backups</p>
+
+<h2 id="label-Setup">Setup</h2>
+
+<h3 id="label-What+barman+affects">What barman affects</h3>
+<ul><li>
+<p>Installs barman</p>
+</li><li>
+<p>Installs rsync (only if it&#39;s no already defined)</p>
+</li><li>
+<p>Configures backups via barman <strong>/etc/barman.d</strong> (by default)</p>
+</li></ul>
+
+<h3 id="label-Setup+Requirements">Setup Requirements</h3>
+
+<p>On CentOS and RHEL systems you must install <strong>eyp-epel</strong>:</p>
+
+<pre class="code ruby"><code class="ruby">include ::epel
+
+class { &#39;barman&#39;:	}</code></pre>
+
+<p>Barman needs a bidirectional SSH connection between the barman user on the
+backup server and the postgres user. SSH must be configured such that there
+is no password prompt presented when connecting.</p>
+
+<p>It can be done using <strong>eyp-openssh</strong>:</p>
+
+<pre class="code ruby"><code class="ruby">node &#39;pgm&#39;
+{
+	#.29
+
+	class { &#39;openssh&#39;: }
+	class { &#39;openssh::server&#39;: }
+
+	openssh::privkey { &#39;postgres&#39;:
+		homedir =&gt; &#39;/var/lib/pgsql&#39;,
+	}
+
+	#[root@agus ~]# cat ~barman/.ssh/id_rsa.pub
+	ssh_authorized_key { &#39;barman@agus&#39;:
+		user =&gt; &#39;postgres&#39;,
+		type =&gt; &#39;ssh-rsa&#39;,
+		key  =&gt; &#39;AAAAB3NzaC1yc2EAAAABIwAAAQEAx90lzyBtJxIqJqCQAWJvVUM9xLer0NNZRuKUHAirLi5Ygqtfrlt4RmfV2aS6JAw20vFHpQPD9xUpBxn5A9OWfR5dxjye+tPbVktnMHtYq0alzD9z4vnq9/K0VIKLi4UF9xQBPDuvCKC+Vf5eshyy+z/nufKPDWB7Fw7aQibqMgXeroOnKpsjaRUOdvkE0hmaFoqVUoN1h5sNBjbVBiY0oH+MNbovYMhNeSpkJbbxJm1zZd16B6zJwlfEbJuMyLbWkNqZw9GQD9nN4YXvwojN4oK39u88MUZknxqlaBqt4tqJYZWMESYsPKgd1FSMbsbFya9Ynr9zWc9KxHk14GNecw==&#39;,
+	}
+
+	#[root@agus ~]# cat /etc/ssh/ssh_host_rsa_key.pub
+	sshkey { &#39;192.168.56.31&#39;:
+		ensure       =&gt; &#39;present&#39;,
+		key          =&gt; &#39;AAAAB3NzaC1yc2EAAAABIwAAAQEA823ebe7UWj+iFHeOLPZOfDgYdcODKS7U6KQZwvCdTr8H0bnBnrqjpuLtQ5bZ7O/hek+toss9q6QPr0mqqYBPDr1IhmQHHQc76qwiapLeTcj3KOq+T+GSVSY2jVCk/118f+hgamQ7DHQ+JtWm40cpUIWI9rypg8UkCTqWExbnmC7w2uOZHFrWN33gWeZ+KMC3wkjgoIzFMoFyASTqBf1uBFnmMA2sg8nQbxtXFQhYECwLvjMy2DCcTa6watBtIa1DtVPjtU40geko7EgYgrDmEOhQNxNFcFX1Xcbqka5RMHk7McWZ0iHKnc5olEtBmubOui+FXtuB1mOEYL1RjvS20Q==&#39;,
+		type         =&gt; &#39;ssh-rsa&#39;,
+	}
+
+  (...)
+}
+
+node &#39;agus&#39;
+{
+	#.31
+
+	class { &#39;openssh&#39;: }
+	class { &#39;openssh::server&#39;: }
+
+	openssh::privkey { &#39;barman&#39;:
+		homedir =&gt; &#39;/var/lib/barman&#39;,
+	}
+
+	#[root@pgm .ssh]# cat ~postgres/.ssh/id_rsa.pub
+	ssh_authorized_key { &#39;postgres@pgm&#39;:
+	  user =&gt; &#39;barman&#39;,
+	  type =&gt; &#39;ssh-rsa&#39;,
+	  key  =&gt; &#39;AAAAB3NzaC1yc2EAAAABIwAAAQEAwoUm9uxmm8aocyUMxr6IRPHn9OL4RLULZAKNWbrTjiZ5n+po3zGaeq6QFyLUdl/i7lLnSyQ2SlL2RpWxp/M3sYbPe0cQpW5d9SYDZ9X0AOnzYo+lPD6Fhc8wRwdNGGHCUXV0nIlWdKxje4E3uAeSnUvkgYBbNQd5D11fXDGEiEMLEXpxNUU/osjzSVnW24WCT3RoZCGz9p2zsLcH1EUFIitXMsmayphHGW22Y0rLu0H0diyOJSinsYfQHWfzRPiwsBW6xcgrxQirXz+7vf3o5q7X2urnOmBYZvXc/EHdguo7U9qNbJt8krKLSMV/Ak0+Hm6JSh8fONNZbmLazix1sw==&#39;,
+	}
+
+	#[root@pgm .ssh]# cat /etc/ssh/ssh_host_rsa_key.pub
+	sshkey { &#39;192.168.56.29&#39;:
+		ensure       =&gt; &#39;present&#39;,
+		key          =&gt; &#39;AAAAB3NzaC1yc2EAAAABIwAAAQEA823ebe7UWj+iFHeOLPZOfDgYdcODKS7U6KQZwvCdTr8H0bnBnrqjpuLtQ5bZ7O/hek+toss9q6QPr0mqqYBPDr1IhmQHHQc76qwiapLeTcj3KOq+T+GSVSY2jVCk/118f+hgamQ7DHQ+JtWm40cpUIWI9rypg8UkCTqWExbnmC7w2uOZHFrWN33gWeZ+KMC3wkjgoIzFMoFyASTqBf1uBFnmMA2sg8nQbxtXFQhYECwLvjMy2DCcTa6watBtIa1DtVPjtU40geko7EgYgrDmEOhQNxNFcFX1Xcbqka5RMHk7McWZ0iHKnc5olEtBmubOui+FXtuB1mOEYL1RjvS20Q==&#39;,
+		type         =&gt; &#39;ssh-rsa&#39;,
+	}
+
+  (...)
+}</code></pre>
+
+<h3 id="label-Beginning+with+barman">Beginning with barman</h3>
+
+<p>example environment: * pgm contains a postgres instance * agus is a barman</p>
+
+<pre class="code ruby"><code class="ruby">node &#39;pgm&#39;
+{
+	#.29
+
+	class { &#39;openssh&#39;: }
+	class { &#39;openssh::server&#39;: }
+
+	openssh::privkey { &#39;postgres&#39;:
+		homedir =&gt; &#39;/var/lib/pgsql&#39;,
+	}
+
+	#[root@agus ~]# cat ~barman/.ssh/id_rsa.pub
+	ssh_authorized_key { &#39;barman@agus&#39;:
+		user =&gt; &#39;postgres&#39;,
+		type =&gt; &#39;ssh-rsa&#39;,
+		key  =&gt; &#39;AAAAB3NzaC1yc2EAAAABIwAAAQEAx90lzyBtJxIqJqCQAWJvVUM9xLer0NNZRuKUHAirLi5Ygqtfrlt4RmfV2aS6JAw20vFHpQPD9xUpBxn5A9OWfR5dxjye+tPbVktnMHtYq0alzD9z4vnq9/K0VIKLi4UF9xQBPDuvCKC+Vf5eshyy+z/nufKPDWB7Fw7aQibqMgXeroOnKpsjaRUOdvkE0hmaFoqVUoN1h5sNBjbVBiY0oH+MNbovYMhNeSpkJbbxJm1zZd16B6zJwlfEbJuMyLbWkNqZw9GQD9nN4YXvwojN4oK39u88MUZknxqlaBqt4tqJYZWMESYsPKgd1FSMbsbFya9Ynr9zWc9KxHk14GNecw==&#39;,
+	}
+
+	#[root@agus ~]# cat /etc/ssh/ssh_host_rsa_key.pub
+	sshkey { &#39;192.168.56.31&#39;:
+		ensure       =&gt; &#39;present&#39;,
+		key          =&gt; &#39;AAAAB3NzaC1yc2EAAAABIwAAAQEA823ebe7UWj+iFHeOLPZOfDgYdcODKS7U6KQZwvCdTr8H0bnBnrqjpuLtQ5bZ7O/hek+toss9q6QPr0mqqYBPDr1IhmQHHQc76qwiapLeTcj3KOq+T+GSVSY2jVCk/118f+hgamQ7DHQ+JtWm40cpUIWI9rypg8UkCTqWExbnmC7w2uOZHFrWN33gWeZ+KMC3wkjgoIzFMoFyASTqBf1uBFnmMA2sg8nQbxtXFQhYECwLvjMy2DCcTa6watBtIa1DtVPjtU40geko7EgYgrDmEOhQNxNFcFX1Xcbqka5RMHk7McWZ0iHKnc5olEtBmubOui+FXtuB1mOEYL1RjvS20Q==&#39;,
+		type         =&gt; &#39;ssh-rsa&#39;,
+	}
+
+	class { &#39;sysctl&#39;: }
+
+	class { &#39;postgresql&#39;:
+		wal_level =&gt; &#39;hot_standby&#39;,
+		max_wal_senders =&gt; &#39;3&#39;,
+		checkpoint_segments =&gt; &#39;8&#39;,
+		wal_keep_segments =&gt; &#39;8&#39;,
+		archive_mode =&gt; true,
+		archive_command_custom =&gt; &#39;rsync -a %p barman@192.168.56.31:/var/lib/barman/pgm/incoming/%f&#39;,
+	}
+
+	postgresql::hba_rule { &#39;test&#39;:
+		user =&gt; &#39;replicator&#39;,
+		database =&gt; &#39;replication&#39;,
+		address =&gt; &#39;192.168.56.0/24&#39;,
+	}
+
+	postgresql::hba_rule { &#39;barman&#39;:
+		user =&gt; &#39;postgres&#39;,
+		database =&gt; &#39;all&#39;,
+		address =&gt; &#39;192.168.56.31/32&#39;,
+		auth_method =&gt; &#39;trust&#39;,
+	}
+
+	postgresql::role { &#39;replicator&#39;:
+		replication =&gt; true,
+		password =&gt; &#39;replicatorpassword&#39;,
+	}
+
+	postgresql::schema { &#39;jordi&#39;:
+		owner =&gt; &#39;replicator&#39;,
+	}
+
+}
+
+node &#39;agus&#39;
+{
+	#.31
+
+	include ::epel
+
+	class { &#39;barman&#39;:	}
+
+	class { &#39;openssh&#39;: }
+	class { &#39;openssh::server&#39;: }
+
+	openssh::privkey { &#39;barman&#39;:
+		homedir =&gt; &#39;/var/lib/barman&#39;,
+	}
+
+	#[root@pgm .ssh]# cat ~postgres/.ssh/id_rsa.pub
+	ssh_authorized_key { &#39;postgres@pgm&#39;:
+	  user =&gt; &#39;barman&#39;,
+	  type =&gt; &#39;ssh-rsa&#39;,
+	  key  =&gt; &#39;AAAAB3NzaC1yc2EAAAABIwAAAQEAwoUm9uxmm8aocyUMxr6IRPHn9OL4RLULZAKNWbrTjiZ5n+po3zGaeq6QFyLUdl/i7lLnSyQ2SlL2RpWxp/M3sYbPe0cQpW5d9SYDZ9X0AOnzYo+lPD6Fhc8wRwdNGGHCUXV0nIlWdKxje4E3uAeSnUvkgYBbNQd5D11fXDGEiEMLEXpxNUU/osjzSVnW24WCT3RoZCGz9p2zsLcH1EUFIitXMsmayphHGW22Y0rLu0H0diyOJSinsYfQHWfzRPiwsBW6xcgrxQirXz+7vf3o5q7X2urnOmBYZvXc/EHdguo7U9qNbJt8krKLSMV/Ak0+Hm6JSh8fONNZbmLazix1sw==&#39;,
+	}
+
+	#[root@pgm .ssh]# cat /etc/ssh/ssh_host_rsa_key.pub
+	sshkey { &#39;192.168.56.29&#39;:
+		ensure       =&gt; &#39;present&#39;,
+		key          =&gt; &#39;AAAAB3NzaC1yc2EAAAABIwAAAQEA823ebe7UWj+iFHeOLPZOfDgYdcODKS7U6KQZwvCdTr8H0bnBnrqjpuLtQ5bZ7O/hek+toss9q6QPr0mqqYBPDr1IhmQHHQc76qwiapLeTcj3KOq+T+GSVSY2jVCk/118f+hgamQ7DHQ+JtWm40cpUIWI9rypg8UkCTqWExbnmC7w2uOZHFrWN33gWeZ+KMC3wkjgoIzFMoFyASTqBf1uBFnmMA2sg8nQbxtXFQhYECwLvjMy2DCcTa6watBtIa1DtVPjtU40geko7EgYgrDmEOhQNxNFcFX1Xcbqka5RMHk7McWZ0iHKnc5olEtBmubOui+FXtuB1mOEYL1RjvS20Q==&#39;,
+		type         =&gt; &#39;ssh-rsa&#39;,
+	}
+
+	barman::backup { &#39;pgm&#39;:
+		description =&gt; &#39;postgres master&#39;,
+		host =&gt; &#39;192.168.56.29&#39;,
+	}
+}</code></pre>
+
+<p>sample yaml setup:</p>
+
+<pre class="code ruby"><code class="ruby">---
+classes:
+  - barman
+  - epel
+barmanbackups:
+  pgm:
+    description: postgres master
+    host: 192.168.56.20
+    port: 60901
+    mailto: backup_reports@systemadmin.es</code></pre>
+
+<h2 id="label-Usage">Usage</h2>
+
+<h3 id="label-basic+barman+installation">basic barman installation</h3>
+
+<pre class="code ruby"><code class="ruby">class { &#39;barman&#39;:	}</code></pre>
+
+<h3 id="label-backup+from+a+given+server">backup from a given server</h3>
+
+<pre class="code ruby"><code class="ruby">barman::backup { &#39;pgm&#39;:
+  description =&gt; &#39;postgres master&#39;,
+  host =&gt; &#39;192.168.56.29&#39;,
+  recovery_window_days =&gt; 30,
+  retention_policy_mode =&gt; &#39;auto&#39;,
+}
+</code></pre>
+
+<h2 id="label-Reference">Reference</h2>
+
+<h3 id="label-public+classes">public classes</h3>
+
+<h4 id="label-barman">barman</h4>
+
+<p>(…)</p>
+
+<h3 id="label-private+classes">private classes</h3>
+<ul><li>
+<p><strong>barman::install</strong>: setups packages and ssh keys</p>
+</li><li>
+<p><strong>barman::config</strong>: configuration files</p>
+</li><li>
+<p><strong>barman::service</strong>: barman cron job, not and actual service</p>
+</li><li>
+<p><strong>barman::params</strong>: default variables and OS checking</p>
+</li></ul>
+
+<h3 id="label-defines">defines</h3>
+
+<h4 id="label-barman%3A%3Abackup">barman::backup</h4>
+<ul><li>
+<p>backup configuration:</p>
+</li><li>
+<p><strong>description</strong>: backup description</p>
+</li><li>
+<p><strong>host</strong>: hostname</p>
+</li><li>
+<p><strong>backupname</strong>: backup name (default: resource&#39;s name )</p>
+</li><li>
+<p><strong>retention_policy_mode</strong>: Currently only “auto” is
+implemented. Global/Server. (default: auto)</p>
+</li><li>
+<p><strong>recovery_window_days</strong>: recovery window retention policy use
+“RECOVERY WINDOW OF i DAYS” where i is a positive integer representing,
+specifically, the number of days (default: 30)</p>
+</li><li>
+<p><strong>user</strong>: user to connect to the remote host (default:
+postgres)</p>
+</li><li>
+<p><strong>port</strong>: db port (default: 5432)</p>
+</li><li>
+<p><strong>use_notificationscript</strong>: use warper script for email
+notifications (default: true)</p>
+</li><li>
+<p>notification script (<strong>use_notificationscript</strong> must be set to
+true)</p>
+</li><li>
+<p><strong>notification_ensure</strong>: presence of this script
+<em>present</em>/<em>absent</em> (default: present)</p>
+</li><li>
+<p><strong>logdir</strong>: directory to keep logs (default:
+/var/log/pgbarmanbackup)</p>
+</li><li>
+<p><strong>mailto</strong>: email to notify (default: undef)</p>
+</li><li>
+<p><strong>idhost</strong>: Alternate name for the host, if set to undef, uses
+host&#39;s short hostname (default: undef)</p>
+</li><li>
+<p><strong>retention</strong>: (default: 15)</p>
+</li><li>
+<p><strong>compress_barmanlogfile</strong>: compression for log files
+(default: true)</p>
+</li><li>
+<p><strong>notificationscript_basedir</strong>: Notification script
+installation path (default: /usr/local/bin)</p>
+</li><li>
+<p>cronjob (<strong>use_notificationscript</strong>: must be set to true)</p>
+</li><li>
+<p><strong>hour_notificationscript</strong>: hour (default: 2)</p>
+</li><li>
+<p><strong>minute_notificationscript</strong>: minute (default: 0)</p>
+</li><li>
+<p><strong>month_notificationscript</strong>: month (default: undef)</p>
+</li><li>
+<p><strong>monthday_notificationscript</strong>: monthday (default: undef)</p>
+</li><li>
+<p><strong>weekday_notificationscript</strong>: weekday (default: undef)</p>
+</li><li>
+<p><strong>setcron_notificationscript</strong>: enable or disable cronjob
+(default: true)</p>
+</li></ul>
+
+<h2 id="label-Limitations">Limitations</h2>
+
+<p>Tested on CentOS 6 only</p>
+
+<h2 id="label-Development">Development</h2>
+
+<p>We are pushing to have acceptance testing in place, so any new feature
+should have some test to check both presence and absence of any feature</p>
+
+<h3 id="label-TODO">TODO</h3>
+<ul><li>
+<p>Support for:</p>
+</li><li>
+<p>CentOS 5</p>
+</li><li>
+<p>CentOS 7</p>
+</li><li>
+<p>Ubuntu 14.04</p>
+</li></ul>
+
+<h3 id="label-Contributing">Contributing</h3>
+<ol><li>
+<p>Fork it</p>
+</li><li>
+<p>Create your feature branch (<code>git checkout -b my-new-feature</code>)</p>
+</li><li>
+<p>Commit your changes (<code>git commit -am &#39;Added some
+feature&#39;</code>)</p>
+</li><li>
+<p>Push to the branch (<code>git push origin my-new-feature</code>)</p>
+</li><li>
+<p>Create new Pull Request</p>
+</li></ol>
+</div></div>
+
+      <div id="footer">
+  Generated on Mon Oct 23 15:03:23 2017 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.9 (ruby-2.1.9).
+</div>
+
+    </div>
+  </body>
+</html>

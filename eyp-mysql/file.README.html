@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.9.9
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "README";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="puppet_manifest_list_link"
+        href="puppet_manifest_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'>
+<h1 id="label-mysql">mysql</h1>
+
+<h4 id="label-Table+of+Contents">Table of Contents</h4>
+<ol><li>
+<p><a href="#overview">Overview</a></p>
+</li><li>
+<p><a href="#module-description">Module Description</a></p>
+</li><li>
+<p><a href="#setup">Setup</a></p>
+<ul><li>
+<p><a href="#what-mysql-affects">What mysql affects</a></p>
+</li><li>
+<p><a href="#setup-requirements">Setup requirements</a></p>
+</li><li>
+<p><a href="#beginning-with-mysql">Beginning with mysql</a></p>
+</li></ul>
+</li><li>
+<p><a href="#usage">Usage</a></p>
+</li><li>
+<p><a href="#reference">Reference</a></p>
+</li><li>
+<p><a href="#limitations">Limitations</a></p>
+</li><li>
+<p><a href="#development">Development</a></p>
+<ul><li>
+<p><a href="#todo">TODO</a></p>
+</li><li>
+<p><a href="#contributing">Contributing</a></p>
+</li></ul>
+</li></ol>
+
+<h2 id="label-Overview">Overview</h2>
+
+<p>multi instance / multi flavor MySQL management</p>
+
+<h2 id="label-Module+Description">Module Description</h2>
+
+<p>multi instance / multi flavor MySQL management: * MySQL Community * XtraDB
+Cluster (percona&#39;s Galera)</p>
+
+<p>backup strategies: * <strong>mysqldump</strong>: grants + 1 file per DB *
+<strong>xtrabackup</strong>: full mode only</p>
+
+<h2 id="label-Setup">Setup</h2>
+
+<h3 id="label-What+mysql+affects">What mysql affects</h3>
+<ul><li>
+<p>installs percona repo (if needed)</p>
+</li><li>
+<p>installs MySQL packages</p>
+</li><li>
+<p>manages configuration files (<strong>/etc/mysql</strong>) - it&#39;s not
+possible to have a unmanaged MySQL instance</p>
+</li></ul>
+
+<h3 id="label-Setup+Requirements">Setup Requirements</h3>
+
+<p>This module requires pluginsync enabled</p>
+
+<h3 id="label-Beginning+with+mysql">Beginning with mysql</h3>
+
+<pre class="code ruby"><code class="ruby">mysql::community::instance { &#39;test&#39;:
+  port              =&gt; &#39;3306&#39;,
+  password          =&gt; &#39;password&#39;,
+  add_default_mycnf =&gt; true,
+}
+
+mysql::community::instance { &#39;test2&#39;:
+  port              =&gt; &#39;3307&#39;,
+  password          =&gt; &#39;password&#39;,
+  add_default_mycnf =&gt; true,
+}
+</code></pre>
+
+<h2 id="label-Usage">Usage</h2>
+
+<h3 id="label-single+node+XtraDB+demo+cluster">single node XtraDB demo cluster</h3>
+
+<pre class="code ruby"><code class="ruby">mysql::xtradbcluster::instance { &#39;cluster1&#39;:
+  cluster_name       =&gt; &#39;galera&#39;,
+  port						   =&gt; &#39;3306&#39;,
+  bootstrap          =&gt; true,
+  password           =&gt; &#39;password&#39;,
+  serverid           =&gt; &#39;1&#39;,
+  default_instance   =&gt; true,
+  cluster_list       =&gt; [ &#39;192.168.56.103:4568&#39; ],
+  sst_username       =&gt; &#39;sstuser&#39;,
+  sst_password       =&gt; &#39;sstpassw0rd&#39;,
+  node_address       =&gt; &#39;192.168.56.103&#39;,
+  gmcast_listen_addr =&gt; &#39;tcp://0.0.0.0:4567&#39;
+}
+
+-&gt;
+
+mysql::xtradbcluster::instance { &#39;cluster2&#39;:
+  cluster_name       =&gt; &#39;galera&#39;,
+  port						   =&gt; &#39;3307&#39;,
+  bootstrap          =&gt; false,
+  password           =&gt; &#39;password&#39;,
+  serverid           =&gt; &#39;2&#39;,
+  default_instance   =&gt; false,
+  cluster_list       =&gt; [ &#39;192.168.56.103:4567&#39; ],
+  sst_username       =&gt; &#39;sstuser&#39;,
+  sst_password       =&gt; &#39;sstpassw0rd&#39;,
+  node_address       =&gt; &#39;192.168.56.103&#39;,
+  gmcast_listen_addr =&gt; &#39;tcp://0.0.0.0:4568&#39;
+}</code></pre>
+
+<p><em>Note: Once cluster is bootstraped we need to change bootstrap to false
+in the primary node</em></p>
+
+<h3 id="label-backup+scripts">backup scripts</h3>
+
+<p>install backup script using xtrabackup tool for <strong>cluster1</strong>
+instance:</p>
+
+<pre class="code ruby"><code class="ruby">mysql::backup::xtrabackup { &#39;cluster1&#39;:
+  destination =&gt; &#39;/backup&#39;,
+}
+</code></pre>
+
+<p>install backup script for <strong>galera</strong> instance using hiera:</p>
+
+<pre class="code ruby"><code class="ruby">xtrabackup:
+  &#39;galera&#39;:
+    hour: &#39;3&#39;
+    minute: &#39;0&#39;
+    destination: &#39;/var/mysql/backup&#39;
+    idhost: &#39;EXAMPLE001&#39;
+    mailto: &#39;backups@backups.systemadmin.es&#39;
+    retention: &#39;5&#39;</code></pre>
+
+<h3 id="label-misc">misc</h3>
+
+<p>run SQL query</p>
+
+<pre class="code ruby"><code class="ruby">mysql_sql { &#39;caca&#39;:
+  command =&gt; &#39;select version()&#39;,
+  instance_name =&gt; &#39;test&#39;,
+}
+</code></pre>
+
+<p>create database</p>
+
+<pre class="code ruby"><code class="ruby">mysql::database { &#39;provaprova&#39;: }</code></pre>
+
+<h2 id="label-Reference">Reference</h2>
+
+<h3 id="label-classes">classes</h3>
+
+<h4 id="label-mysql%3A%3Aperconarepo">mysql::perconarepo</h4>
+
+<p>percona repo installation</p>
+<ul><li>
+<p><strong>srcdir</strong>: = &#39;/usr/local/src&#39;,</p>
+</li><li>
+<p><strong>package_ensure</strong>: = &#39;installed&#39;,</p>
+</li></ul>
+
+<h4 id="label-mysql%3A%3Atools%3A%3Aperconatoolkit">mysql::tools::perconatoolkit</h4>
+
+<p>percona toolkit installation</p>
+<ul><li>
+<p><strong>package_ensure</strong>: = &#39;installed&#39;,</p>
+</li></ul>
+
+<h4 id="label-mysql%3A%3Atools%3A%3Ainnochecksum">mysql::tools::innochecksum</h4>
+
+<p>ibdata inspector</p>
+<ul><li>
+<p><strong>binpath</strong>: place to install innochecksum tool (default:
+/usr/local/bin/innochecksum)</p>
+</li></ul>
+
+<h3 id="label-defines">defines</h3>
+
+<h4 id="label-mysql%3A%3Axtradbcluster%3A%3Ainstance">mysql::xtradbcluster::instance</h4>
+
+<h4 id="label-mysql%3A%3Acommunity%3A%3Ainstance">mysql::community::instance</h4>
+
+<h4 id="label-mysql%3A%3Abackup%3A%3Axtrabackup">mysql::backup::xtrabackup</h4>
+<ul><li>
+<p>general options:</p>
+</li><li>
+<p><strong>destination</strong>:</p>
+</li><li>
+<p><strong>retention</strong>: = undef,</p>
+</li><li>
+<p><strong>logdir</strong>: = undef,</p>
+</li><li>
+<p><strong>mailto</strong>: = undef,</p>
+</li><li>
+<p><strong>idhost</strong>: = undef,</p>
+</li><li>
+<p><strong>backupscript</strong>: backup script path (default:
+/usr/local/bin/backup_xtrabackup)</p>
+</li><li>
+<p><strong>backupid</strong>: = &#39;MySQL&#39;,</p>
+</li><li>
+<p><strong>xtrabackup_version</strong>: xtrabackup version to install
+(default: 2.4.4)</p>
+</li><li>
+<p>full backup related variables:</p>
+</li><li>
+<p><strong>fullbackup_monthday</strong>: day of month to perform full backups,
+space padded (default: undef) - <strong>INCOMPATIBLE</strong> with
+<strong>fullbackup_weekday</strong></p>
+</li><li>
+<p><strong>fullbackup_weekday</strong>: day of week (1..7) to perform full
+backups; 1 is Monday (default: undef) - <strong>INCOMPATIBLE</strong> with
+<strong>fullbackup_monthday</strong></p>
+</li><li>
+<p>cronjob related variables:</p>
+</li><li>
+<p><strong>hour</strong>: = &#39;2&#39;,</p>
+</li><li>
+<p><strong>minute</strong>: = &#39;0&#39;,</p>
+</li><li>
+<p><strong>month</strong>: = undef,</p>
+</li><li>
+<p><strong>monthday</strong>: = undef,</p>
+</li><li>
+<p><strong>weekday</strong>: = undef,</p>
+</li><li>
+<p><strong>setcron</strong>: = true,</p>
+</li></ul>
+
+<h4 id="label-mysql%3A%3Abackup%3A%3Amysqldump">mysql::backup::mysqldump</h4>
+<ul><li>
+<p><strong>destination</strong>: ,</p>
+</li><li>
+<p><strong>instance</strong>: = $name,</p>
+</li><li>
+<p><strong>retention</strong>: = undef,</p>
+</li><li>
+<p><strong>logdir</strong>: = undef,</p>
+</li><li>
+<p><strong>compress</strong>: = true,</p>
+</li><li>
+<p><strong>mailto</strong>: = undef,</p>
+</li><li>
+<p><strong>idhost</strong>: = undef,</p>
+</li><li>
+<p><strong>backupscript</strong>: = &#39;/usr/local/bin/backupmysqldump&#39;,</p>
+</li><li>
+<p><strong>hour</strong>: = &#39;2&#39;,</p>
+</li><li>
+<p><strong>minute</strong>: = &#39;0&#39;,</p>
+</li><li>
+<p><strong>month</strong>: = undef,</p>
+</li><li>
+<p><strong>monthday</strong>: = undef,</p>
+</li><li>
+<p><strong>weekday</strong>: = undef,</p>
+</li><li>
+<p><strong>setcron</strong>: = true,</p>
+</li></ul>
+
+<h4 id="label-mysql%3A%3Amycnf%3A%3Aclient">mysql::mycnf::client</h4>
+<ul><li>
+<p><strong>instance_name</strong>: = $name,</p>
+</li><li>
+<p><strong>client_name</strong>: = $name,</p>
+</li><li>
+<p><strong>default</strong>: = false,</p>
+</li><li>
+<p><strong>password</strong>: = undef,</p>
+</li><li>
+<p><strong>socket</strong>: = undef,</p>
+</li></ul>
+
+<h4 id="label-mysql%3A%3Amycnf%3A%3Amysqld">mysql::mycnf::mysqld</h4>
+<ul><li>
+<p><strong>instance_name</strong>: = $name,</p>
+</li><li>
+<p><strong>skip_external_locking</strong>: =
+$mysql::params::skip_external_locking_default,</p>
+</li><li>
+<p><strong>tmpdir</strong>: = $mysql::params::tmpdir_default,</p>
+</li><li>
+<p><strong>port</strong>: = &#39;3306&#39;,</p>
+</li><li>
+<p><strong>pidfile</strong>: = undef,</p>
+</li><li>
+<p><strong>datadir</strong>: = “/var/mysql/$name”,</p>
+</li><li>
+<p><strong>relaylogdir</strong>: = “/var/mysql/$name/relaylogs”,</p>
+</li><li>
+<p><strong>binlogdir</strong>: = “/var/mysql/$name/binlogs”,</p>
+</li><li>
+<p><strong>default_storage_engine</strong>: = &#39;InnoDB&#39;,</p>
+</li><li>
+<p><strong>ignoreclientcharset</strong>: = true,</p>
+</li><li>
+<p><strong>charset</strong>: = &#39;utf8&#39;,</p>
+</li><li>
+<p><strong>readonly</strong>: = false,</p>
+</li><li>
+<p><strong>key_buffer_size</strong>: =
+$mysql::params::key_buffer_size_default,</p>
+</li><li>
+<p><strong>sysdate_is_now</strong>: = true,</p>
+</li><li>
+<p><strong>max_allowed_packet</strong>: = &#39;16M&#39;,</p>
+</li><li>
+<p><strong>max_connect_errors</strong>: = &#39;1000000&#39;,</p>
+</li><li>
+<p><strong>nameresolve</strong>: = false,</p>
+</li><li>
+<p><strong>innodb</strong>: = &#39;FORCE&#39;,</p>
+</li><li>
+<p><strong>expirelogsdays</strong>: = &#39;5&#39;,</p>
+</li><li>
+<p><strong>binlog_format</strong>: = &#39;MIXED&#39;,</p>
+</li><li>
+<p><strong>sync_binlog</strong>: = true,</p>
+</li><li>
+<p><strong>serverid</strong>: = &#39;1&#39;,</p>
+</li><li>
+<p><strong>max_binlog_size</strong>: = &#39;1073741824&#39;,</p>
+</li><li>
+<p><strong>log_bin_trust_function_creators</strong>: = false,</p>
+</li><li>
+<p><strong>slave</strong>: = false,</p>
+</li><li>
+<p><strong>max_relay_log_size</strong>: = &#39;0&#39;,</p>
+</li><li>
+<p><strong>replicate_ignore_db</strong>: = [],</p>
+</li><li>
+<p><strong>max_heap_table_size</strong>: = &#39;32M&#39;,</p>
+</li><li>
+<p><strong>tmp_table_size</strong>: = &#39;32M&#39;,</p>
+</li><li>
+<p><strong>query_cache_type</strong>: = &#39;0&#39;,</p>
+</li><li>
+<p><strong>query_cache_size</strong>: = &#39;0&#39;,</p>
+</li><li>
+<p><strong>query_cache_limit</strong>: = &#39;1048576&#39;,</p>
+</li><li>
+<p><strong>max_connections</strong>: = &#39;500&#39;,</p>
+</li><li>
+<p><strong>max_user_connections</strong>: = &#39;0&#39;,</p>
+</li><li>
+<p><strong>thread_cache_size</strong>: = &#39;50&#39;,</p>
+</li><li>
+<p><strong>open_files_limit</strong>: = &#39;65535&#39;,</p>
+</li><li>
+<p><strong>table_definition_cache</strong>: = &#39;4096&#39;,</p>
+</li><li>
+<p><strong>table_open_cache</strong>: = &#39;100&#39;,</p>
+</li><li>
+<p><strong>sort_buffer_size</strong>: = &#39;262144&#39;,</p>
+</li><li>
+<p><strong>join_buffer_size</strong>: = &#39;131072&#39;,</p>
+</li><li>
+<p><strong>innodb_flush_method</strong>: = &#39;O_DIRECT&#39;,</p>
+</li><li>
+<p><strong>innodb_log_files_in_group</strong>: = &#39;2&#39;,</p>
+</li><li>
+<p><strong>innodb_log_file_size</strong>: = &#39;50331648&#39;,</p>
+</li><li>
+<p><strong>innodb_flush_log_at_trx_commit</strong>: = &#39;2&#39;,</p>
+</li><li>
+<p><strong>innodb_file_per_table</strong>: = true,</p>
+</li><li>
+<p><strong>innodb_buffer_pool_size</strong>: = ceiling(sprintf(&#39;%f&#39;,
+$::memorysize_mb)*838860),</p>
+</li><li>
+<p><strong>innodb_autoinc_lock_mode</strong>: = undef,</p>
+</li><li>
+<p><strong>log_queries_not_using_indexes</strong>: = false,</p>
+</li><li>
+<p><strong>slow_query_log</strong>: = true,</p>
+</li><li>
+<p><strong>log_error</strong>: = “/var/log/mysql/$name/mysql-error.log”,</p>
+</li><li>
+<p><strong>slow_query_log_file</strong>: =
+“/var/log/mysql/$name/mysql-slow.log”,</p>
+</li></ul>
+
+<h4 id="label-mysql%3A%3Amycnf%3A%3Agalera">mysql::mycnf::galera</h4>
+<ul><li>
+<p><strong>wsrep_node_address</strong>: = $::ipaddress,</p>
+</li><li>
+<p><strong>wsrep_cluster_address</strong>: = [],</p>
+</li><li>
+<p><strong>instance_name</strong>: = $name,</p>
+</li><li>
+<p><strong>wsrep_provider</strong>: = &#39;/usr/lib/libgalera_smm.so&#39;,</p>
+</li><li>
+<p><strong>wsrep_sst_method</strong>: = &#39;xtrabackup-v2&#39;,</p>
+</li><li>
+<p><strong>wsrep_cluster_name</strong>: = &#39;my_wsrep_cluster&#39;,</p>
+</li><li>
+<p><strong>wsrep_sst_auth_username</strong>: = &#39;dmlzY2EK&#39;,</p>
+</li><li>
+<p><strong>wsrep_sst_auth_password</strong>: = &#39;Y2F0YWx1bnlhCg&#39;,</p>
+</li><li>
+<p><strong>wsrep_dirty_reads</strong>: = false,</p>
+</li><li>
+<p><strong>wsrep_desync</strong>: = false,</p>
+</li><li>
+<p><strong>wsrep_reject_queries</strong>: = &#39;NONE&#39;,</p>
+</li><li>
+<p><strong>wsrep_sst_donor</strong>: = undef,</p>
+</li><li>
+<p><strong>srep_sst_donor_rejects_queries</strong>: = false,</p>
+</li><li>
+<p><strong>gmcast_listen_addr</strong>: = &#39;tcp://0.0.0.0:4567&#39;,</p>
+</li></ul>
+
+<h2 id="label-Limitations">Limitations</h2>
+
+<p>Tested on:</p>
+<ul><li>
+<p>Ubuntu 16.04</p>
+</li><li>
+<p>Ubuntu 14.04</p>
+</li><li>
+<p>CentOS 6</p>
+</li><li>
+<p>CentOS 7</p>
+</li></ul>
+
+<h2 id="label-Development">Development</h2>
+
+<p>We are pushing to have acceptance testing in place, so any new feature
+should have some test to check both presence and absence of any feature</p>
+
+<h3 id="label-TODO">TODO</h3>
+<ul><li>
+<p><strong>xtrabackup</strong>: incremental mode</p>
+</li><li>
+<p>On Ubuntu fails to install because packages are starting the service before
+being configured. Should be installed using RUNLEVEL=1 (puppet package
+provider does not support environment variables) or to use a similar
+approach</p>
+</li></ul>
+
+<h3 id="label-Contributing">Contributing</h3>
+<ol><li>
+<p>Fork it</p>
+</li><li>
+<p>Create your feature branch (<code>git checkout -b my-new-feature</code>)</p>
+</li><li>
+<p>Commit your changes (<code>git commit -am &#39;Added some
+feature&#39;</code>)</p>
+</li><li>
+<p>Push to the branch (<code>git push origin my-new-feature</code>)</p>
+</li><li>
+<p>Create new Pull Request</p>
+</li></ol>
+</div></div>
+
+      <div id="footer">
+  Generated on Mon Oct 23 15:03:27 2017 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.9 (ruby-2.1.9).
+</div>
+
+    </div>
+  </body>
+</html>

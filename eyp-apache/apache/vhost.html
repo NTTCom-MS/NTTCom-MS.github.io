@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Definedtype: apache::vhost
+  
+    &mdash; Documentation by YARD 0.9.9
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "apache::vhost";
+  relpath = '../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../_index.html">Index (v)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../apache.html" title="apache (hostclass)">apache</a></span></span>
+     &raquo; 
+    <span class="title">vhost</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="puppet_manifest_list_link"
+        href="../puppet_manifest_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div class='module_header'>
+  <h1>
+    Puppet Defined Type: vhost
+  </h1>
+</div>
+<div class="box_info">
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>manifests/vhost.pp</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>
+<h1 id="label-vhost+concat+order">vhost concat order</h1>
+
+<p>01 - vhost definition as in vhost/vhost.erb 02 - ssl configuration as in
+ssl/vhost_template.erb 02 - nss configuration as in nss/vhost_template.erb
+03 - directory / location / files 04 - redirect 05,06,07 - rewrite rules 08
+- serverstatus 09,10,11 - aliasmatch 12,13,14 - scriptalias 16,17,18 -
+aliases 19 - proxypass, proxypassreverse, proxyssl 20 - mod_headers 30 -
+location auth (kerberos…) 31 - browsermatch 99 - end vhost</p>
+
+<p>puppet2sitepp @apachevhosts</p>
+</p>
+  </div>
+</div>
+<div class="tags">
+  
+  
+  
+</div>
+<h2>Parameter Summary</h2>
+<div class="tags">
+  <ul class="param">
+    <li><span class="name">documentroot </span><span class="type">(<tt>Any</tt>)</span></li><li><span class="name">description </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">order </span><span class="type">(<tt>Any</tt>)</span><tt> => '00'</tt></li><li><span class="name">port </span><span class="type">(<tt>Any</tt>)</span><tt> => '80'</tt></li><li><span class="name">listen_address </span><span class="type">(<tt>Any</tt>)</span><tt> => '*'</tt></li><li><span class="name">documentroot_owner </span><span class="type">(<tt>Any</tt>)</span><tt> => 'root'</tt></li><li><span class="name">documentroot_group </span><span class="type">(<tt>Any</tt>)</span><tt> => 'root'</tt></li><li><span class="name">documentroot_mode </span><span class="type">(<tt>Any</tt>)</span><tt> => '0755'</tt></li><li><span class="name">use_intermediate </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt></li><li><span class="name">directoryindex </span><span class="type">(<tt>Any</tt>)</span><tt> => [ 'index.php', 'index.html', 'index.htm' ]</tt></li><li><span class="name">defaultvh </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt></li><li><span class="name">defaultvh_ss </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt></li><li><span class="name">servername </span><span class="type">(<tt>Any</tt>)</span><tt> => $name</tt></li><li><span class="name">serveralias </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">allowedip </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">deniedip </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">rewrites </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">rewrites_source </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">certname </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">certname_version </span><span class="type">(<tt>Any</tt>)</span><tt> => ''</tt></li><li><span class="name">cacertname </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">cacertname_version </span><span class="type">(<tt>Any</tt>)</span><tt> => ''</tt></li><li><span class="name">serveradmin </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">aliasmatch </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">scriptalias </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">options </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::options_default</tt></li><li><span class="name">allowoverride </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::allowoverride_default</tt></li><li><span class="name">aliases </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">add_default_logs </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt></li><li><span class="name">log_format </span><span class="type">(<tt>Any</tt>)</span><tt> => 'combined'</tt></li><li><span class="name">log_rotate_seconds </span><span class="type">(<tt>Any</tt>)</span><tt> => '86400'</tt></li><li><span class="name">customlog_filter </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">site_running </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::site_enabled_default</tt></li><li><span class="name">custom_sorrypage </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">defaultcharset </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">includes </span><span class="type">(<tt>Any</tt>)</span><tt> => []</tt></li><li><span class="name">includes_optional </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt></li><li><span class="name">hsts </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt></li><li><span class="name">hsts_max_age </span><span class="type">(<tt>Any</tt>)</span><tt> => '31536000'</tt></li><li><span class="name">hsts_include_subdomains </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt></li><li><span class="name">hsts_preload </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt></li><li><span class="name">ssl_verify_client </span><span class="type">(<tt>Any</tt>)</span><tt> => 'none'</tt></li><li><span class="name">ssl_verify_depth </span><span class="type">(<tt>Any</tt>)</span><tt> => '1'</tt></li><li><span class="name">allow_encoded_slashes </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt></li>
+  </ul>
+</div>
+</div>
+
+      <div id="footer">
+  Generated on Mon Oct 23 15:03:20 2017 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.9 (ruby-2.1.9).
+</div>
+
+    </div>
+  </body>
+</html>

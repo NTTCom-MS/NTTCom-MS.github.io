@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.9.9
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "README";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="puppet_manifest_list_link"
+        href="puppet_manifest_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'>
+<h1 id="label-apache+rdoc-image%3Ahttps%3A%2F%2Fimg.shields.io%2Fbadge%2Fstatus-ready-brightgreen.svg">apache <img src="https://img.shields.io/badge/status-ready-brightgreen.svg"></h1>
+
+<p><strong>NTTCom-MS/eyp-apache</strong>: <a
+href="https://travis-ci.org/NTTCom-MS/eyp-apache"><img
+src="https://travis-ci.org/NTTCom-MS/eyp-apache.png?branch=master"></a></p>
+
+<h4 id="label-Table+of+Contents">Table of Contents</h4>
+<ol><li>
+<p><a href="#overview">Overview</a></p>
+</li><li>
+<p><a href="#module-description">Module Description</a></p>
+</li><li>
+<p><a href="#setup">Setup</a></p>
+<ul><li>
+<p><a href="#what-apache-affects">What apache affects</a></p>
+</li><li>
+<p><a href="#setup-requirements">Setup requirements</a></p>
+</li><li>
+<p><a href="#beginning-with-apache">Beginning with apache</a></p>
+</li></ul>
+</li><li>
+<p><a href="#usage">Usage</a></p>
+</li><li>
+<p><a href="#reference">Reference</a></p>
+</li><li>
+<p><a href="#limitations">Limitations</a></p>
+</li><li>
+<p><a href="#development">Development</a></p>
+<ul><li>
+<p><a href="#contributing">Contributing</a></p>
+</li></ul>
+</li></ol>
+
+<h2 id="label-Overview">Overview</h2>
+
+<p>Apache httpd setup</p>
+
+<h2 id="label-Module+Description">Module Description</h2>
+
+<p>apache httpd and apache modules management</p>
+
+<h2 id="label-Setup">Setup</h2>
+
+<h3 id="label-What+apache+affects">What apache affects</h3>
+<ul><li>
+<p>installs httpd package</p>
+</li><li>
+<p>optionally, manages httpd service</p>
+</li><li>
+<p>puppet managed directories (purges unmanaged files):</p>
+</li><li>
+<p>$apache_confdir/conf.d</p>
+</li><li>
+<p>$apache_confdir/conf.d/sites</p>
+</li><li>
+<p>$apache_confdir/ssl</p>
+</li></ul>
+
+<h3 id="label-Setup+Requirements">Setup Requirements</h3>
+
+<p>This module requires pluginsync enabled</p>
+
+<p>Requirements: * <strong>eyp/eyplib</strong> is required to be able to use
+helper functions like <strong>bool2onoff</strong> *
+<strong>puppetlabs/concat</strong>: most config files are created using
+concat (beaware of file changes)</p>
+
+<p>Optional:</p>
+<ul><li>
+<p><strong>eyp/logrotate</strong>: To be able to purge package&#39;s logrotate
+configuration files you need version 0.1.21 or greater</p>
+</li><li>
+<p><strong>eyp/purgefiles</strong>: To be able to configure cronjobs to purge
+apache logs you need version 0.1.4 of greater</p>
+</li></ul>
+
+<h3 id="label-Beginning+with+apache">Beginning with apache</h3>
+
+<p>Basic setup:</p>
+
+<pre class="code ruby"><code class="ruby">class { &#39;apache&#39;: }
+
+apache::vhost {&#39;default&#39;:
+  defaultvh=&gt;true,
+  documentroot =&gt; &#39;/var/www/void&#39;,
+}
+
+apache::vhost {&#39;et2blog&#39;:
+  documentroot =&gt; &#39;/var/www/et2blog&#39;,
+}
+</code></pre>
+
+<h2 id="label-Usage">Usage</h2>
+
+<p>In this section we have several usage examples, most were used to test
+module&#39;s features or acceptance testing checks
+(<strong>spec/acceptance/base*_spec.rb</strong>)</p>
+
+<h3 id="label-general+Options">general Options</h3>
+
+<h4 id="label-aliasmatch%2C+scriptalias%2C+rewrites+and+directory+directives">aliasmatch, scriptalias, rewrites and directory directives</h4>
+
+<pre class="code ruby"><code class="ruby">apache::vhost {&#39;testing.lol&#39;:
+        order =&gt; &#39;77&#39;,
+        serveradmin =&gt; &#39;root@lolcathost.lol&#39;,
+        serveralias =&gt; [ &#39;1.testing.lol&#39;, &#39;2.testing.lol&#39; ],
+        documentroot =&gt; &#39;/var/www/testing/&#39;,
+        options =&gt; [ &#39;Indexes&#39;, &#39;FollowSymLinks&#39;, &#39;MultiViews&#39; ],
+        rewrites =&gt; [
+          &#39;RewriteCond %{HTTP_HOST} !^testing\.lol&#39;,
+          &#39;RewriteRule ^/(.*)$ http://www\.testing\.lol/$1 [R=301,L]&#39;
+          ],
+        aliasmatch =&gt; { &#39;RUC/lol&#39; =&gt; &#39;/var/www/testing/hc.php&#39;,
+                        &#39;(.*)&#39; =&gt; &#39;/var/www/testing/cc.php&#39;},
+        scriptalias =&gt; { &#39;/cgi-bin/&#39; =&gt; &#39;&quot;/var/www/testing/cgi-bin/&quot;&#39; },
+        directoryindex =&gt; [ &#39;index.php&#39;, &#39;lolindex.php&#39;, &#39;lol.html&#39; ],
+}
+
+apache::directory {&#39;testing.lol&#39;:
+                      vhost_order      =&gt; &#39;77&#39;,
+                      directory       =&gt; &#39;/var/www/testing/cgi-bin/&#39;,
+                      options          =&gt; [ &#39;+ExecCGI&#39;, &#39;-Includes&#39; ],
+                      allowoverride    =&gt; &#39;None&#39;,
+}
+</code></pre>
+
+<h4 id="label-redirect">redirect</h4>
+
+<pre class="code ruby"><code class="ruby">apache::vhost {&#39;et2blog&#39;:
+  documentroot =&gt; &#39;/var/www/et2blog&#39;,
+}
+
+apache::redirect { &#39;et2blog&#39;:
+  path =&gt; &#39;/&#39;,
+  url =&gt; &#39;http://systemadmin.es/&#39;,
+}
+</code></pre>
+
+<h4 id="label-proxypass">proxypass</h4>
+
+<pre class="code ruby"><code class="ruby">class { &#39;apache::mod::proxy&#39;: }
+class { &#39;apache::mod::proxyajp&#39;: }
+class { &#39;apache::mod::proxybalancer&#39;: }
+
+apache::mod::proxy::balancer { &#39;test&#39;:
+  members =&gt;  { &#39;ajp://app1.example.com:8009&#39; =&gt; undef,
+                &#39;ajp://app2.example.com:8009&#39; =&gt; undef,
+              }
+}
+
+apache::mod::proxy::proxypass { &#39;/lol&#39;:
+  destination =&gt; &#39;balancer://test&#39;,
+  servername =&gt; &#39;et2blog&#39;,
+
+}
+</code></pre>
+
+<h4 id="label-custom+logformats">custom logformats</h4>
+
+<p>we can add custom log formats using <strong>logformats</strong> hash, for
+example:</p>
+
+<pre class="code ruby"><code class="ruby">class { &#39;apache&#39;:
+  server_admin=&gt; &#39;webmaster@localhost&#39;,
+  maxclients=&gt; &#39;150&#39;,
+  maxrequestsperchild=&gt;&#39;1000&#39;,
+  customlog_type=&gt;&#39;vhost_combined&#39;,
+  logformats =&gt; {
+      &#39;vhost_combined&#39; =&gt;
+        &#39;%v:%p %h %l %u %t \\&quot;%r\\&quot; %&gt;s %O \\&quot;%{Referer}i\\&quot; \\&quot;%{User-Agent}i\\&quot;&#39;
+        },
+  add_defult_logformats=&gt;true,
+}</code></pre>
+
+<h4 id="label-Load+custom+module">Load custom module</h4>
+
+<pre class="code ruby"><code class="ruby">apache::module { &#39;asis_module&#39;:
+  sofile =&gt; &#39;modules/mod_asis.so&#39;,
+}
+</code></pre>
+
+<h3 id="label-server-status">server-status</h3>
+
+<h4 id="label-server-status+on+a+custom+vhost+with+restricted+IPs">server-status on a custom vhost with restricted IPs</h4>
+
+<pre class="code ruby"><code class="ruby">apache::vhost {&#39;default&#39;:
+  defaultvh =&gt; true,
+  documentroot =&gt; &#39;/var/www/void&#39;,
+}
+
+apache::vhost {&#39;et2blog&#39;:
+  documentroot =&gt; &#39;/var/www/et2blog&#39;,
+}
+
+apache::serverstatus {&#39;et2blog&#39;:}
+
+apache::vhost {&#39;systemadmin.es&#39;:
+  order        =&gt; &#39;10&#39;,
+  port         =&gt; &#39;81&#39;,
+  documentroot =&gt; &#39;/var/www/systemadmin&#39;,
+}
+
+apache::serverstatus {&#39;systemadmin.es&#39;:
+  order     =&gt; &#39;10&#39;,
+  port      =&gt; &#39;81&#39;,
+  allowedip =&gt; [&#39;1.1.1.1&#39;,&#39;2.2.2.2&#39;,&#39;4.4.4.4 5.5.5.5&#39;,&#39;127.&#39;,&#39;::1&#39;],
+}
+</code></pre>
+
+<h3 id="label-mod_php">mod_php</h3>
+
+<pre class="code ruby"><code class="ruby">class { &#39;apache&#39;: }
+
+apache::vhost {&#39;default&#39;:
+  defaultvh=&gt;true,
+  documentroot =&gt; &#39;/var/www/void&#39;,
+}
+
+class { &#39;apache::mod::php&#39;: }
+</code></pre>
+
+<h3 id="label-addtype">addtype</h3>
+
+<pre class="code ruby"><code class="ruby">apache::addtype { &#39;.sinep&#39;:
+  mediatype =&gt; &#39;application/sinep&#39;,
+}
+</code></pre>
+
+<h3 id="label-SSL">SSL</h3>
+
+<h4 id="label-SSL+setup+using+yaml">SSL setup using yaml</h4>
+
+<pre class="code ruby"><code class="ruby">classes:
+  - apache
+apache::listen:
+  - 80
+  - 443
+apache::ssl: true
+apachecerts:
+  systemadmin:
+    cert_source: puppet:///customers/systemadmin/star_systemadmin_net.crt
+    pk_source: puppet:///customers/systemadmin/star_systemadmin_net.key
+    intermediate_source: puppet:///customers/systemadmin/star_systemadmin_net.intermediate
+apachevhosts:
+  systemadmin:
+    documentroot: /var/www/systemadmin
+  systemadmin_ssl:
+    documentroot: /var/www/systemadmin
+    port: 443
+    certname: systemadmin</code></pre>
+
+<h4 id="label-SSL+without+intermediate+certificate">SSL without intermediate certificate</h4>
+
+<p>If we don&#39;t have a intermediate certificate, we can disable it using
+<strong>use_intermediate</strong> (intended for testing only)</p>
+
+<pre class="code ruby"><code class="ruby">apache::vhost {&#39;et2blog_ssl&#39;:
+  documentroot =&gt; &#39;/var/www/et2blog&#39;,
+  port =&gt; 443,
+  certname =&gt; &#39;cert_et2blog_ssl&#39;,
+  use_intermediate =&gt; false,
+}
+</code></pre>
+
+<h4 id="label-HSTS">HSTS</h4>
+
+<pre class="code ruby"><code class="ruby">apache::vhost {&#39;et2blog&#39;:
+  documentroot            =&gt; &#39;/var/www/et2blog&#39;,
+  hsts                    =&gt; true,
+  hsts_include_subdomains =&gt; true,
+}
+</code></pre>
+
+<h4 id="label-mod_nss">mod_nss</h4>
+
+<pre class="code ruby"><code class="ruby"># vhost for ZnVja3RoYXRiaXRjaAo.com
+
+apache::vhost {&#39;ZnVja3RoYXRiaXRjaAo.com&#39;:
+  port         =&gt; &#39;443&#39;,
+  documentroot =&gt; &#39;/var/www/void&#39;,
+}
+
+# generate CSR
+
+apache::nss::csr { &#39;test2&#39;:
+  cn =&gt; &#39;ZnVja3RoYXRiaXRjaAo.com&#39;,
+  organization =&gt; &#39;systemadmin.es&#39;,
+  organization_unit =&gt; &#39;shitty apache modules team&#39;,
+  locality =&gt; &#39;barcelona&#39;,
+  state =&gt; &#39;barcelona&#39;,
+  country =&gt; &#39;RC&#39;, # Republica Catalana
+}
+
+# import intermediate
+
+apache::nss::intermediate { &#39;intermediate&#39;:
+  intermediate_source =&gt; &#39;puppet:///certs/intermediate.crt&#39;,
+}
+
+# import actual certificate
+
+apache::nss::cert { &#39;ZnVja3RoYXRiaXRjaAo&#39;:
+  intermediate_source =&gt; &#39;puppet:///certs/cert.crt&#39;,
+}
+
+# enable mod_nss for this vhost
+
+apache::nss {&#39;ZnVja3RoYXRiaXRjaAo.com&#39;:
+  port      =&gt; &#39;443&#39;,
+}
+</code></pre>
+
+<h3 id="label-Sorry+page">Sorry page</h3>
+
+<p>every vhost created using this module have an alternative vhost to disable
+it (<strong>HTTP 503</strong>)</p>
+
+<h4 id="label-enable%2Fdisable+sorry+page">enable/disable sorry page</h4>
+
+<p>to enable or disable the sorry page for a given site we just need to flip
+<strong>site_running</strong></p>
+
+<pre class="code ruby"><code class="ruby">apache::vhost {&#39;systemadmin.es&#39;:
+  order        =&gt; &#39;10&#39;,
+  port         =&gt; &#39;81&#39;,
+  documentroot =&gt; &#39;/var/www/systemadmin&#39;,
+  site_running =&gt; false,
+}
+</code></pre>
+
+<h4 id="label-Custom+sorry+page">Custom sorry page</h4>
+
+<p>custom_sorrypage hash must contain both variables (<strong>path</strong>
+and <strong>errordocument</strong>)</p>
+
+<pre class="code ruby"><code class="ruby">apache::vhost {&#39;systemadmin.es&#39;:
+  order        =&gt; &#39;10&#39;,
+  port         =&gt; &#39;81&#39;,
+  documentroot =&gt; &#39;/var/www/systemadmin&#39;,
+  custom_sorrypage =&gt; { &#39;path&#39;: &#39;/var/www/systemadmin/maintenance&#39;,
+                        &#39;errordocument&#39;: &#39;maintenance.html&#39;,
+  }
+}
+</code></pre>
+
+<h4 id="label-includes">includes</h4>
+
+<pre class="code ruby"><code class="ruby">apache::include_conf { &#39;/etc:
+  files =&gt; [ &#39;demo.conf&#39; ],
+}
+</code></pre>
+
+<h3 id="label-mod_headers">mod_headers</h3>
+
+<h4 id="label-apache%3A%3Aheader">apache::header</h4>
+
+<pre class="code ruby"><code class="ruby">apache::vhost {&#39;et2blog&#39;:
+  documentroot =&gt; &#39;/var/www/et2blog&#39;,
+}
+
+apache::header { &#39;et2blog&#39;:
+  header_name =&gt; &#39;X-Joke&#39;,
+  header_value =&gt; &#39;no hay MAC que por ARP no venga&#39;,
+  condition =&gt; &#39;always&#39;,
+}
+</code></pre>
+
+<p>this adds the following directive:</p>
+
+<pre class="code ruby"><code class="ruby">Header onsuccess set X-Joke &quot;no hay MAC que por ARP no venga&quot;</code></pre>
+
+<h3 id="label-mod_proxy">mod_proxy</h3>
+
+<h4 id="label-mod_proxy_balancer">mod_proxy_balancer</h4>
+
+<pre class="code ruby"><code class="ruby">classes:
+  - apache
+  - apache::mod::expires
+  - apache::mod::proxy
+  - apache::mod::proxybalancer
+  - apache::mod::proxyajp
+apache::listen:
+  - 7790
+apachevhosts:
+  default:
+    defaultvh: true
+    documentroot: /var/www/void
+    port: 7790
+  pspstores.systemadmin.es:
+    documentroot: /var/www/void
+    port: 7790
+apachebalancers:
+  pspstores:
+    members:
+      &#39;ajp://192.168.56.19:9509&#39;: undef
+      &#39;ajp://192.168.56.18:9509&#39;: undef
+apacheproxypasses:
+  &#39;/&#39;:
+    destination: &#39;balancer://pspstores&#39;
+    servername: pspstores.systemadmin.es
+    port: 7790
+  &#39;/manager&#39;:
+    destination: &#39;!&#39;
+    servername: pspstores.systemadmin.es
+    port: 7790
+  &#39;/host-manager&#39;:
+    destination: &#39;!&#39;
+    servername: pspstores.systemadmin.es
+    port: 7790</code></pre>
+
+<h4 id="label-Exclude+healthcheck">Exclude healthcheck</h4>
+
+<pre class="code ruby"><code class="ruby">apache::vhost {&#39;systemadmin.es&#39;:
+  order        =&gt; &#39;10&#39;,
+  port         =&gt; &#39;81&#39;,
+  documentroot =&gt; &#39;/var/www/systemadmin&#39;,
+  custom_sorrypage =&gt; { &#39;path&#39;: &#39;/var/www/systemadmin/maintenance&#39;,
+                        &#39;errordocument&#39;: &#39;maintenance.html&#39;,
+                        &#39;healthcheck&#39;: &#39;healthcheck/healthcheck.html&#39;,
+  }
+}
+</code></pre>
+
+<h3 id="label-FCGI">FCGI</h3>
+
+<pre class="code ruby"><code class="ruby">class {&#39;apache::fcgi&#39;:
+  fcgihost =&gt; &#39;192.168.56.18&#39;,
+}
+</code></pre>
+
+<h2 id="label-Reference">Reference</h2>
+
+<h3 id="label-facts">facts</h3>
+<ul><li>
+<p><strong>eyp_apache_gcc</strong>: get gcc version</p>
+</li><li>
+<p><strong>eyp_apache_make</strong>: get make version</p>
+</li><li>
+<p><strong>eyp_apache_opensslver</strong>: get openssl version</p>
+</li></ul>
+
+<h3 id="label-global+hiera+settings">global hiera settings</h3>
+<ul><li>
+<p><strong>eypapache::monitips</strong>: IP list to be allowed by default in
+the default vhost. Used in <strong>apache::serverstatus</strong> as a
+default list of allowd IPs</p>
+</li><li>
+<p><strong>eypapache::pfs</strong>: enable Perfect Fordward Secrecy (PFS) - it
+changed default ciphers to use ECC</p>
+</li></ul>
+
+<h3 id="label-classes">classes</h3>
+
+<h4 id="label-apache">apache</h4>
+
+<p>private classes:  * <strong>apache::params</strong>: apache default values 
+* <strong>apache::service</strong>: apache service  *
+<strong>apache::version</strong>: detect distro&#39;s apache version</p>
+
+<p>apache variables: * operational variables:  *
+<strong>manage_service</strong> = true,  *
+<strong>manage_docker_service</strong> = false,  *
+<strong>purge_logrotate</strong>: Purge package&#39;s related logrotate
+configuration (default: true)  * <strong>compress_logs_mtime</strong>:
+compress log files after this value (for example: +3, default: undef)  *
+<strong>delete_logs_mtime</strong>: delete log files after this value (for
+example: +3, default: undef) * distro related variables:  *
+<strong>version</strong> = $apache::version::default,  *
+<strong>apache_username</strong> = $apache::params::apache_username,  *
+<strong>apache_group</strong> = $apache::params::apache_group,  *
+<strong>logdir</strong> = $apache::params::logdir, * general options:  *
+<strong>mpm</strong> = $apache::params::mpm_default,  *
+<strong>servertokens</strong> = $apache::params::servertokens_default,  *
+<strong>timeout</strong> = $apache::params::timeout_default,  *
+<strong>keepalive</strong> = $apache::params::keepalive_default,  *
+<strong>keepalivetimeout</strong> =
+$apache::params::keepalivetimeout_default,  *
+<strong>maxkeepalivereq</strong> =
+$apache::params::maxkeepalivereq_default,  *
+<strong>extendedstatus</strong> = $apache::params::extendedstatus_default, 
+* <strong>serversignature</strong> =
+$apache::params::serversignature_default,  * <strong>listen</strong> = [
+&#39;80&#39; ],  * <strong>namevirtualhosts</strong> = undef,  *
+<strong>ssl</strong> = false,  * <strong>sni</strong> = true,  *
+<strong>trace</strong> = false,  * <strong>server_admin</strong> =
+$apache::params::server_admin_default,  * <strong>directoty_index</strong>
+= [ &#39;index.html&#39; ],  * <strong>maxclients</strong> =
+$apache::params::maxclients_default,  *
+<strong>maxrequestsperchild</strong> =
+$apache::params::maxrequestsperchild_default,  *
+<strong>customlog_type</strong> = $apache::params::customlog_type_default, 
+* <strong>logformats</strong> = undef,  *
+<strong>add_defult_logformats</strong> = true,  *
+<strong>server_name</strong> = $apache::params::server_name_default,  *
+<strong>ssl_compression</strong> =
+$apache::params::ssl_compression_default,  * <strong>ssl_protocol</strong>
+= $apache::params::ssl_protocol_default,  *
+<strong>ssl_chiphersuite</strong> =
+$apache::params::ssl_chiphersuite_default,  *
+<strong>defaultcharset</strong> = &#39;UTF-8&#39;,  *
+<strong>loglevel_errorlog</strong> = &#39;warn&#39;,  *
+<strong>usecanonicalname</strong> = false,  *
+<strong>default_documentroot</strong> = &#39;/var/www/html&#39;,  *
+<strong>accessfilename</strong> = &#39;.htaccess&#39;,  *
+<strong>hostnamelookups</strong> = false,  * <strong>startservers</strong>
+= 8,  * <strong>minspareservers</strong> = 5,  *
+<strong>maxspareservers</strong> = 20,</p>
+
+<h4 id="label-apache%3A%3Afcgi">apache::fcgi</h4>
+
+<p>installs mod_fastcgi</p>
+<ul><li>
+<p><strong>srcdir</strong>: (default: /usr/local/src)</p>
+</li><li>
+<p><strong>handler_name</strong>: (default: resource&#39;s name)</p>
+</li><li>
+<p><strong>fcgihost</strong>: (default: 127.0.0.1)</p>
+</li><li>
+<p><strong>fcgiport</strong>: (default: 9000)</p>
+</li></ul>
+
+<h4 id="label-modules">modules</h4>
+
+<h5 id="label-apache%3A%3Amod%3A%3Adeflate">apache::mod::deflate</h5>
+<ul><li>
+<p><strong>ensure</strong>: installed/purged (default: installed)</p>
+</li></ul>
+
+<h5 id="label-apache%3A%3Amod%3A%3Aexpires">apache::mod::expires</h5>
+<ul><li>
+<p><strong>ensure</strong>: installed/purged (default: installed)</p>
+</li><li>
+<p><strong>expires_active</strong>: true/false (default: true)</p>
+</li><li>
+<p><strong>default_expire</strong>: default expire policy (default: access
+plus 1 year)</p>
+</li></ul>
+
+<h5 id="label-apache%3A%3Amod%3A%3Aphp">apache::mod::php</h5>
+
+<p><strong>WARNING</strong> Only works on Ubuntu 14.04</p>
+<ul><li>
+<p><strong>ensure</strong>: installed/purged (default: installed)</p>
+</li></ul>
+
+<h5 id="label-apache%3A%3Amod%3A%3Aproxy">apache::mod::proxy</h5>
+<ul><li>
+<p><strong>ensure</strong>: installed/purged (default: installed)</p>
+</li></ul>
+
+<h5 id="label-apache%3A%3Amod%3A%3Aproxyajp">apache::mod::proxyajp</h5>
+<ul><li>
+<p><strong>ensure</strong>: installed/purged (default: installed)</p>
+</li></ul>
+
+<h5 id="label-apache%3A%3Amod%3A%3Aproxybalancer">apache::mod::proxybalancer</h5>
+<ul><li>
+<p><strong>ensure</strong>: installed/purged (default: installed)</p>
+</li></ul>
+
+<h5 id="label-apache%3A%3Amod%3A%3Aproxyconnect">apache::mod::proxyconnect</h5>
+<ul><li>
+<p><strong>ensure</strong>: installed/purged (default: installed)</p>
+</li></ul>
+
+<h5 id="label-apache%3A%3Amod%3A%3Aproxyftp">apache::mod::proxyftp</h5>
+<ul><li>
+<p><strong>ensure</strong>: installed/purged (default: installed)</p>
+</li></ul>
+
+<h5 id="label-apache%3A%3Amod%3A%3Aproxyhttp">apache::mod::proxyhttp</h5>
+<ul><li>
+<p><strong>ensure</strong>: installed/purged (default: installed)</p>
+</li></ul>
+
+<h5 id="label-apache%3A%3Amod%3A%3Anss">apache::mod::nss</h5>
+<ul><li>
+<p><strong>ensure</strong>: installed/purged (default: installed)</p>
+</li><li>
+<p><strong>randomseed</strong>: Array to configure a set of sources to seed
+the PRNG of the SSL library. (default: builtin) <code> NSSRandomSeed
+startup builtin NSSRandomSeed startup file:/dev/random  512 NSSRandomSeed
+startup file:/dev/urandom 512 </code></p>
+</li></ul>
+
+<h3 id="label-defines">defines</h3>
+
+<h4 id="label-apache%3A%3Acert">apache::cert</h4>
+<ul><li>
+<p><strong>pk_source</strong>: private key certificate source, incompatible
+with <strong>pk_file</strong></p>
+</li><li>
+<p><strong>pk_file</strong>: private key certificate file path, file is
+already present on the fs. incompatible with <strong>pk_source</strong> -
+intended for testing only</p>
+</li><li>
+<p><strong>cert_source</strong>: cert certificate source, incompatible with
+<strong>cert_file</strong></p>
+</li><li>
+<p><strong>cert_file</strong>: cert certificate file path, file is already
+present on the fs. incompatible with <strong>cert_source</strong> -
+intended for testing only</p>
+</li><li>
+<p><strong>intermediate_source</strong>: intermediate certificate source</p>
+</li><li>
+<p><strong>certname</strong>: cert name (default: resource&#39;s name)</p>
+</li><li>
+<p><strong>version</strong>: optional, cert version (to be able to keep
+several versions)</p>
+</li></ul>
+
+<h4 id="label-apache%3A%3Acustom_conf">apache::custom_conf</h4>
+<ul><li>
+<p><strong>source</strong>: file to deploy</p>
+</li><li>
+<p><strong>filename</strong>: file to be deployed (default: resource&#39;s
+name)</p>
+</li></ul>
+
+<p>file will be deployed in this path:
+<strong>$apache::params::baseconf/conf.d/$filename.conf</strong></p>
+
+<h4 id="label-apache%3A%3Adirectory">apache::directory</h4>
+<ul><li>
+<p><strong>order</strong>: order of the vhost where we want to deploy the
+directory (default: 00)</p>
+</li><li>
+<p><strong>port</strong>: port of the vhost where we want to deploy the
+directory (default: 80)</p>
+</li><li>
+<p><strong>servername</strong>: servername on which we want to deploy the
+directory (default: resource&#39;s name)</p>
+</li><li>
+<p><strong>directory</strong>: directory to define (mandatory)</p>
+</li><li>
+<p><strong>allowedip</strong>: allow a given set of IPs to this directory
+(default: undef)</p>
+</li><li>
+<p><strong>denyip</strong>: deny a given set of IPs to this directory
+(default: undef)</p>
+</li><li>
+<p><strong>options</strong>: directory options (default: [
+&#39;FollowSymlinks&#39; ])</p>
+</li><li>
+<p><strong>allowoverride</strong>: allow override (default: None)</p>
+</li></ul>
+
+<h4 id="label-apache%3A%3Amodule">apache::module</h4>
+<ul><li>
+<p><strong>sofile</strong>: file to load</p>
+</li><li>
+<p><strong>modname</strong>: module name (default: resource&#39;s name)</p>
+</li><li>
+<p><strong>order</strong>: just in case it&#39;s relevant</p>
+</li></ul>
+
+<h4 id="label-apache%3A%3Aserverstatus">apache::serverstatus</h4>
+<ul><li>
+<p><strong>order</strong>: order of the vhost where we want to deploy the
+server-status (default: 00)</p>
+</li><li>
+<p><strong>port</strong>: port of the vhost where we want to deploy the
+server-status (default: 80)</p>
+</li><li>
+<p><strong>serverstatus_url</strong>: server-status URL (default:
+<strong>/server-status</strong>)</p>
+</li><li>
+<p><strong>servername</strong>: servername on which we want to deploy the
+server-status</p>
+</li><li>
+<p><strong>allowedip</strong>: (default: <strong>eypapache::monitips</strong>)</p>
+</li><li>
+<p><strong>defaultvh</strong>: Defines whether this server-status is intended
+to be used in the default vhost or not (default: false)</p>
+</li></ul>
+
+<h4 id="label-apache%3A%3Aredirect">apache::redirect</h4>
+<ul><li>
+<p><strong>url</strong>: destinarion URL</p>
+</li><li>
+<p><strong>path</strong>: path to redirect,</p>
+</li><li>
+<p><strong>status</strong>: redirect type (default: permanent)</p>
+</li><li>
+<p><strong>match</strong>: whether use RedirectMatch or nor (default: undef)</p>
+</li><li>
+<p><strong>order</strong>: order of the vhost where we want to deploy the
+redirect (default: 00)</p>
+</li><li>
+<p><strong>port</strong>: port of the vhost where we want to deploy the
+redirect (default: 80)</p>
+</li><li>
+<p><strong>servername</strong>: servername on which we want to deploy the
+redirect</p>
+</li></ul>
+
+<p>example:</p>
+
+<pre class="code ruby"><code class="ruby">apache::redirect { &#39;et2blog&#39;:
+  path =&gt; &#39;/&#39;,
+  url =&gt; &#39;http://systemadmin.es/&#39;,
+}
+</code></pre>
+
+<h4 id="label-apache%3A%3Avhost">apache::vhost</h4>
+<ul><li>
+<p><strong>documentroot</strong>: DocumentRoot</p>
+</li><li>
+<p><strong>order</strong>: Order (default: 00)</p>
+</li><li>
+<p><strong>port</strong>: Listen port (default: 80)</p>
+</li><li>
+<p><strong>use_intermediate</strong>: (default: true)</p>
+</li><li>
+<p><strong>certname_version</strong>:</p>
+</li><li>
+<p><strong>directoryindex</strong>: (default: [ &#39;index.php&#39;,
+&#39;index.html&#39;, &#39;index.htm&#39; ])</p>
+</li><li>
+<p><strong>defaultvh</strong>: Only for default virtual host (default: false)</p>
+</li><li>
+<p><strong>defaultvh_ss</strong>: Enable or disable default virtual host
+server status (default: true)</p>
+</li><li>
+<p><strong>servername</strong>: ServerName (default: $name)</p>
+</li><li>
+<p><strong>serveralias</strong>: ServerAlias array (default: undef)</p>
+</li><li>
+<p><strong>allowedip</strong>: Allowed ip for DocumentRoot (default: undef)</p>
+</li><li>
+<p><strong>deniedip</strong>: Denied ip for DocumentRoot (default: undef)</p>
+</li><li>
+<p><strong>rewrites</strong>: Rewrites list (default: undef)</p>
+</li><li>
+<p><strong>rewrites_source</strong>: (default: undef)</p>
+</li><li>
+<p><strong>certname</strong>: (default: undef)</p>
+</li><li>
+<p><strong>serveradmin</strong>: ServerAdmin (default: undef)</p>
+</li><li>
+<p><strong>aliasmatch</strong>: AliasMatch hash (default: undef)</p>
+</li><li>
+<p><strong>scriptalias</strong>: ScriptAlias hash (default: undef)</p>
+</li><li>
+<p><strong>options</strong>: Options for DocumentRoot directory (default: [
+&#39;FollowSymlinks&#39; ])</p>
+</li><li>
+<p><strong>allowoverride</strong>: AllowOverride (default: None)</p>
+</li><li>
+<p><strong>aliases</strong>: Alias hash (default: undef)</p>
+</li><li>
+<p><strong>add_default_logs</strong>: Add default logging (default: true)</p>
+</li><li>
+<p><strong>site_running</strong>: Define if site should be running (true) or
+sorrypage should be shown (false) (default: true)</p>
+</li><li>
+<p><strong>custom_sorrypage</strong>: Define a custom sorry page. A hash with
+&#39;path&#39; (where sorrypage document is stored) and
+&#39;errordocument&#39; (document to load as sorry page) must be provided.
+If the vhost is load balanced and needs to serve a healthcheck page we can
+exclude it from 503 adding it to the key &#39;healthcheck&#39;. (see Usage
+documentation) (default: undef)</p>
+</li><li>
+<p><strong>documentroot_owner</strong>: documentroot&#39;s owner (default:
+root)</p>
+</li><li>
+<p><strong>documentroot_group</strong>: documentroot&#39;s owner (default:
+group)</p>
+</li><li>
+<p><strong>documentroot_mode</strong>: documentroot&#39;s mode (default: 0755)</p>
+</li></ul>
+
+<h2 id="label-Limitations">Limitations</h2>
+
+<p>Tested on: * CentOS 5 * CentOS 6 * CentOS 7 * Ubuntu 14.04</p>
+
+<h2 id="label-Development">Development</h2>
+
+<p>We are pushing to have acceptance testing in place, so any new feature
+should have some test to check both presence and absence of any feature</p>
+
+<h3 id="label-Contributing">Contributing</h3>
+<ol><li>
+<p>Fork it</p>
+</li><li>
+<p>Create your feature branch (<code>git checkout -b my-new-feature</code>)</p>
+</li><li>
+<p>Commit your changes (<code>git commit -am &#39;Added some
+feature&#39;</code>)</p>
+</li><li>
+<p>Push to the branch (<code>git push origin my-new-feature</code>)</p>
+</li><li>
+<p>Create new Pull Request</p>
+</li></ol>
+</div></div>
+
+      <div id="footer">
+  Generated on Mon Oct 23 15:03:20 2017 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.9 (ruby-2.1.9).
+</div>
+
+    </div>
+  </body>
+</html>

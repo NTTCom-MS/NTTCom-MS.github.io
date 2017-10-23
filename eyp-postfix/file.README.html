@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.9.9
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "README";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="puppet_manifest_list_link"
+        href="puppet_manifest_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'>
+<h1 id="label-postfix+rdoc-image%3Ahttps%3A%2F%2Fimg.shields.io%2Fbadge%2Fstatus-ready-brightgreen.svg">postfix <img src="https://img.shields.io/badge/status-ready-brightgreen.svg"></h1>
+
+<h4 id="label-Table+of+Contents">Table of Contents</h4>
+<ol><li>
+<p><a href="#overview">Overview</a></p>
+</li><li>
+<p><a href="#module-description">Module Description</a></p>
+</li><li>
+<p><a href="#setup">Setup</a></p>
+<ul><li>
+<p><a href="#what-postfix-affects">What postfix affects</a></p>
+</li><li>
+<p><a href="#setup-requirements">Setup requirements</a></p>
+</li><li>
+<p><a href="#beginning-with-postfix">Beginning with postfix</a></p>
+</li></ul>
+</li><li>
+<p><a href="#usage">Usage</a></p>
+</li><li>
+<p><a href="#reference">Reference</a></p>
+</li><li>
+<p><a href="#limitations">Limitations</a></p>
+</li><li>
+<p><a href="#development">Development</a></p>
+<ul><li>
+<p><a href="#contributing">Contributing</a></p>
+</li></ul>
+</li></ol>
+
+<h2 id="label-Overview">Overview</h2>
+
+<p>postfix management</p>
+
+<h2 id="label-Module+Description">Module Description</h2>
+
+<p>postfix setup and configuration, can be configured to act like a simple
+mail relay or a multidomain mailserver</p>
+
+<h2 id="label-Setup">Setup</h2>
+
+<h3 id="label-What+postfix+affects">What postfix affects</h3>
+<ul><li>
+<p>/etc/postfix/main.cf</p>
+</li><li>
+<p>package management</p>
+</li><li>
+<p>service management</p>
+</li><li>
+<p>purges packages for other MTA on CentOS and switches to postfix on Ubunut
+14.04</p>
+</li></ul>
+
+<h3 id="label-Setup+Requirements">Setup Requirements</h3>
+
+<p>This module <strong>requires pluginsync</strong> enabled and
+<strong>eyp-dovecot</strong> (it is required to be able to setup IMAP for
+the mailserver: <strong>postfix::vmail</strong>)</p>
+
+<h3 id="label-Beginning+with+postfix">Beginning with postfix</h3>
+
+<h4 id="label-basic+setup%3A">basic setup:</h4>
+
+<pre class="code ruby"><code class="ruby">class { &#39;postfix&#39;:
+  inetinterfaces =&gt; &#39;localhost&#39;,
+}
+</code></pre>
+
+<h4 id="label-mail+relay%3A">mail relay:</h4>
+
+<pre class="code ruby"><code class="ruby">class { &#39;postfix&#39;:
+  relayhost =&gt; &#39;1.2.3.4&#39;,
+}
+</code></pre>
+
+<h4 id="label-multidomain+mail+server">multidomain mail server</h4>
+
+<pre class="code ruby"><code class="ruby">class { &#39;postfix&#39;: }
+
+class { &#39;postfix::vmail&#39;: }
+
+postfix::vmail::alias { &#39;example@systemadmin.es&#39;:
+  aliasto =&gt; [ &#39;exemple@systemadmin.es&#39; ],
+}
+
+postfix::vmail::account { &#39;example@systemadmin.es&#39;:
+  accountname =&gt; &#39;example&#39;,
+  domain      =&gt; &#39;systemadmin.es&#39;,
+  password    =&gt; &#39;secretpassw0rd&#39;,
+}
+
+postfix::vmail::account { &#39;silvia@systemadmin.es&#39;:
+  accountname =&gt; &#39;silvia&#39;,
+  domain      =&gt; &#39;systemadmin.es&#39;,
+  password    =&gt; &#39;secretpassw0rd2&#39;,
+}
+
+postfix::vmail::account { &#39;marc@systemadmin.es&#39;:
+  accountname =&gt; &#39;marc&#39;,
+  domain      =&gt; &#39;systemadmin.es&#39;,
+  password    =&gt; &#39;secretpassw0rd3&#39;,
+}
+</code></pre>
+
+<h2 id="label-Usage">Usage</h2>
+
+<p>This module can be used to configure postfix to relay mails to another
+server or to have virtual mailboxes (multidomain/multiaccount).</p>
+
+<p>To setup <strong>opportunistic TLS with custom certificates</strong>:</p>
+
+<pre class="code ruby"><code class="ruby">class { &#39;postfix&#39;:
+		opportunistictls =&gt; true,
+		tlscert          =&gt; &#39;puppet:///openldap/masterauth/ldap-master-01.crt&#39;,
+		tlspk            =&gt; &#39;puppet:///openldap/masterauth/ldap-master-01.key.pem&#39;,
+	}</code></pre>
+
+<p>To setup <strong>opportunistic TLS with selfsigned certificate</strong>:</p>
+
+<pre class="code ruby"><code class="ruby">class { &#39;postfix&#39;:
+		opportunistictls  =&gt; true,
+		subjectselfsigned =&gt; &#39;/C=ES/ST=Barcelona/L=Barcelona/O=systemadmin.es/CN=systemadmin.es&#39;,
+		generatecert      =&gt; true,
+	}</code></pre>
+
+<p>Mailserver with contentfilter (amavis)</p>
+
+<pre class="code ruby"><code class="ruby"># Mailserver
+class { &#39;postfix&#39;: }
+
+class { &#39;postfix::vmail&#39;: }
+
+postfix::vmail::account { &#39;merda@merda.com&#39;:
+  accountname =&gt; &#39;merda&#39;,
+  domain =&gt; &#39;merda.com&#39;,
+  password =&gt; &#39;putamerda&#39;,
+}
+
+class { &#39;postfix::contentfilter&#39;:
+}
+</code></pre>
+
+<p>multiple smtp outbound instances:</p>
+
+<pre class="code ruby"><code class="ruby">postfix::instance { &#39;out_domain1&#39;:
+  type    =&gt; &#39;unix&#39;,
+  chroot  =&gt; &#39;n&#39;,
+  command =&gt; &#39;smtp&#39;,
+  opts    =&gt; { &#39;smtp_bind_address&#39; =&gt; &#39;1.1.1.1&#39;,
+               &#39;smtp_helo_name&#39; =&gt; &#39;systemadmin.es&#39;,
+               &#39;syslog_name&#39; =&gt; &#39;postfix-systemadmin.es&#39;,
+             }
+}
+
+postfix::instance { &#39;out_domain2&#39;:
+  type    =&gt; &#39;unix&#39;,
+  chroot  =&gt; &#39;n&#39;,
+  command =&gt; &#39;smtp&#39;,
+  opts    =&gt; { &#39;smtp_bind_address&#39; =&gt; &#39;1.2.2.2&#39;,
+               &#39;smtp_helo_name&#39; =&gt; &#39;sysadmins.es&#39;,
+               &#39;syslog_name&#39; =&gt; &#39;postfix-sysadmins.es&#39;,
+             }
+}
+</code></pre>
+
+<p>blackhole domain or account (to be able to blackhole a domain it requires
+<strong>postfix::vmail</strong>):</p>
+
+<pre class="code ruby"><code class="ruby">postfix::alias { &#39;blackhole&#39;:
+  to =&gt; &#39;/dev/null&#39;,
+}
+
+postfix::vmail::alias { &#39;@blackhole.com&#39;:
+  aliasto =&gt; [ &#39;blackhole@&#39; ],
+}
+</code></pre>
+
+<p>log example:</p>
+
+<pre class="code ruby"><code class="ruby"># echo a | mail -s caca blackhole@
+
+Nov 29 12:33:03 ldapm postfix/pickup[16927]: 51876A105B: uid=0 from=&lt;root&gt;
+Nov 29 12:33:03 ldapm postfix/cleanup[16995]: 51876A105B: message-id=&lt;20161129113303.51876A105B@ldapm&gt;
+Nov 29 12:33:03 ldapm postfix/qmgr[16928]: 51876A105B: from=&lt;root@vm.vm&gt;, size=384, nrcpt=1 (queue active)
+Nov 29 12:33:03 ldapm postfix/local[16997]: 51876A105B: to=&lt;blackhole@ldapm&gt;, orig_to=&lt;blackhole@&gt;, relay=local, delay=0.09, delays=0.07/0.03/0/0, dsn=2.0.0, status=sent (delivered to file: /dev/null)
+Nov 29 12:33:03 ldapm postfix/qmgr[16928]: 51876A105B: removed
+
+# echo a | mail -s caca dsadadas@blackhole.com
+
+Nov 29 12:33:10 ldapm postfix/pickup[16927]: 70BA8A105B: uid=0 from=&lt;root&gt;
+Nov 29 12:33:10 ldapm postfix/cleanup[16995]: 70BA8A105B: message-id=&lt;20161129113310.70BA8A105B@ldapm&gt;
+Nov 29 12:33:10 ldapm postfix/qmgr[16928]: 70BA8A105B: from=&lt;root@vm.vm&gt;, size=396, nrcpt=1 (queue active)
+Nov 29 12:33:10 ldapm postfix/local[16997]: 70BA8A105B: to=&lt;blackhole@ldapm&gt;, orig_to=&lt;dsadadas@blackhole.com&gt;, relay=local, delay=0.03, delays=0.02/0/0/0, dsn=2.0.0, status=sent (delivered to file: /dev/null)
+Nov 29 12:33:10 ldapm postfix/qmgr[16928]: 70BA8A105B: removed</code></pre>
+
+<p>multiple inbound email instances:</p>
+
+<pre class="code ruby"><code class="ruby">class { &#39;postfix&#39;:
+  inetinterfaces =&gt; &#39;all&#39;,
+  mynetworks  =&gt; [ &#39;127.0.0.1/32&#39; ],
+  myhostname =&gt; &#39;smtp3.systemadmin.es&#39;,
+  smtpdbanner =&gt; &#39;smtp3.systemadmin.es ESMTP&#39;,
+  opportunistictls =&gt; true,
+  subjectselfsigned =&gt; &#39;/C=UK/ST=Shropshire/L=Telford/O=systemadmin/CN=smtp3.systemadmin.es&#39;,
+  generatecert =&gt; true,
+  syslog_name =&gt; &#39;private&#39;,
+}
+
+class { &#39;postfix::vmail&#39;: }
+
+postfix::vmail::account { &#39;systemadmin@systemadmin.es&#39;:
+  accountname =&gt; &#39;systemadmin&#39;,
+  domain      =&gt; &#39;systemadmin.com&#39;,
+  password    =&gt; &#39;systemadmin_secret_passw0rd&#39;,
+}
+
+postfix::instance { &#39;0.0.0.0:2525&#39;:
+  type    =&gt; &#39;inet&#39;,
+  private =&gt; &#39;n&#39;,
+  chroot  =&gt; &#39;n&#39;,
+  command =&gt; &#39;smtpd&#39;,
+  opts    =&gt; {
+              &#39;content_filter&#39;               =&gt; &#39;&#39;,
+              &#39;smtpd_helo_restrictions&#39;      =&gt; &#39;&#39;,
+              &#39;smtpd_sender_restrictions&#39;    =&gt; &#39;&#39;,
+              &#39;smtpd_recipient_restrictions&#39; =&gt; &#39;permit_mynetworks,reject&#39;,
+              &#39;mynetworks&#39;                   =&gt; &#39;127.0.0.0/8,10.0.2.15/32&#39;,
+              &#39;receive_override_options&#39;     =&gt; &#39;no_header_body_checks&#39;,
+              &#39;smtpd_helo_required&#39;          =&gt; &#39;no&#39;,
+              &#39;smtpd_client_restrictions&#39;    =&gt; &#39;&#39;,
+              &#39;smtpd_restriction_classes&#39;    =&gt; &#39;&#39;,
+              &#39;disable_vrfy_command&#39;         =&gt; &#39;no&#39;,
+              #&#39;strict_rfc821_envelopes&#39;      =&gt; &#39;yes&#39;,
+              &#39;smtpd_sasl_auth_enable&#39;       =&gt; &#39;no&#39;,
+              &#39;syslog_name&#39;									 =&gt; &#39;public&#39;,
+            },
+  order   =&gt; &#39;99&#39;,
+}</code></pre>
+
+<h2 id="label-Reference">Reference</h2>
+
+<h3 id="label-postfix">postfix</h3>
+
+<p>Most variables are standard postfix variables, please refer to postfix
+documentation:  * append_dot_mydomain  * biff  * inetinterfaces  * ipv6  *
+mail_spool_directory  * mydestination  * mydomain  * myhostname  *
+mynetworks  * myorigin  * readme_directory  * recipient_delimiter  *
+relayhost  * smtp_fallback_relay  * smtpdbanner  * install_mailclient  *
+default_process_limit  * smtpd_client_connection_count_limit  *
+smtpd_client_connection_rate_limit  * in_flow_delay  * setgid_group  * (…)</p>
+<ul><li>
+<p><strong>install_mailclient</strong>: controls if a mail client should be
+installed (default: true)</p>
+</li></ul>
+
+<h4 id="label-SSL+certificates%3A">SSL certificates:</h4>
+<ul><li>
+<p><strong>opportunistictls</strong>: controls Opportunistic TLS (default:
+false)</p>
+</li><li>
+<p><strong>generatecert</strong>: controls if a selfsigned certificate is
+generated for this postfix instance (default: true)</p>
+</li><li>
+<p><strong>tlscert</strong>: source cert file - <strong>generatecert</strong>
+must be false</p>
+</li><li>
+<p><strong>tlspk</strong>: source private key - <strong>generatecert</strong>
+must be false</p>
+</li><li>
+<p><strong>subjectselfsigned</strong> subject for a selfsigned certificate -
+<strong>generatecert</strong> must be true. example:
+&#39;/C=RC/ST=Barcelona/L=Barcelona/O=systemadmin.es/CN=systemadmin.es&#39;,</p>
+</li></ul>
+
+<h3 id="label-postfix%3A%3Atransport">postfix::transport</h3>
+
+<p>bounce a specific domain:</p>
+
+<pre class="code ruby"><code class="ruby">postfix::transport { &#39;example.com&#39;:
+  error =&gt; &#39;email to this domain is not allowed&#39;,
+}
+</code></pre>
+
+<p>SMTP route:</p>
+
+<pre class="code ruby"><code class="ruby">postfix::transport { &#39;example.com&#39;:
+  nexthop =&gt; &#39;1.1.1.1&#39;,
+}
+</code></pre>
+
+<h3 id="label-postfix%3A%3Avmail">postfix::vmail</h3>
+<ul><li>
+<p><strong>mailbox_base</strong>: (default: /var/vmail)</p>
+</li><li>
+<p><strong>setup_dovecot</strong>: (default: true)</p>
+</li><li>
+<p><strong>smtpd_recipient_restrictions</strong> (default:
+permit_inet_interfaces,permit_mynetworks,permit_sasl_authenticated,reject_unauth_destination)</p>
+</li><li>
+<p><strong>smtpd_relay_restrictions</strong> (default:
+permit_inet_interfaces,permit_mynetworks,permit_sasl_authenticated,reject_unauth_destination)</p>
+</li></ul>
+
+<h3 id="label-postfix%3A%3Avmail%3A%3Aacount">postfix::vmail::acount</h3>
+
+<pre class="code ruby"><code class="ruby">postfix::vmail::account { &#39;silvia@systemadmin.es&#39;:
+  accountname =&gt; &#39;silvia&#39;,
+  domain      =&gt; &#39;systemadmin.es&#39;,
+  password    =&gt; &#39;secretpassw0rd2&#39;,
+}
+</code></pre>
+
+<h3 id="label-postfix%3A%3Avmail%3A%3Aalias">postfix::vmail::alias</h3>
+
+<pre class="code ruby"><code class="ruby">postfix::vmail::alias { &#39;example@systemadmin.es&#39;:
+  aliasto =&gt; [ &#39;exemple@systemadmin.es&#39; ],
+}
+</code></pre>
+
+<h2 id="label-Limitations">Limitations</h2>
+
+<p>Tested on: * CentOS 5 * CentOS 6 * CentOS 7 * Ubuntu 14.04 * SLES 11 SP3</p>
+
+<h2 id="label-Development">Development</h2>
+
+<p>We are pushing to have acceptance testing in place, so any new feature
+should have some test to check both presence and absence of any feature</p>
+
+<h3 id="label-TODO">TODO</h3>
+<ul><li>
+<p>improve documentation (multidoamin mailserver is not yet covered)</p>
+</li><li>
+<p>SQLite support (was added with Postfix version 2.8)</p>
+</li><li>
+<p>add requires for postmap operations and rewrite it to use
+$postfix::params::baseconf</p>
+</li></ul>
+
+<h3 id="label-Contributing">Contributing</h3>
+<ol><li>
+<p>Fork it</p>
+</li><li>
+<p>Create your feature branch (<code>git checkout -b my-new-feature</code>)</p>
+</li><li>
+<p>Commit your changes (<code>git commit -am &#39;Added some
+feature&#39;</code>)</p>
+</li><li>
+<p>Push to the branch (<code>git push origin my-new-feature</code>)</p>
+</li><li>
+<p>Create new Pull Request</p>
+</li></ol>
+</div></div>
+
+      <div id="footer">
+  Generated on Mon Oct 23 15:03:36 2017 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.9 (ruby-2.1.9).
+</div>
+
+    </div>
+  </body>
+</html>

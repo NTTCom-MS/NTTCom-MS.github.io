@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Hostclass: apache
+  
+    &mdash; Documentation by YARD 0.9.9
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "apache";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index (a)</a> &raquo;
+    
+    
+    <span class="title">apache</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="puppet_manifest_list_link"
+        href="puppet_manifest_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div class='module_header'>
+  <h1>
+    Puppet Class: apache
+  </h1>
+</div>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName"><span class='object_link'><a href="apache/params.html" title="apache::params (hostclass)">apache::params</a></span></span>
+      <ul class="fullTree">
+        
+          <li class="next"><span class='object_link'><a href="apache/version.html" title="apache::version (hostclass)">apache::version</a></span></li>
+        
+          <li class="next"><span class='object_link'><a href="apache/params.html" title="apache::params (hostclass)">apache::params</a></span></li>
+        
+          <li class="next">apache</li>
+        
+      </ul>
+      <a href="#" class="inheritanceTree">show all</a>
+    </dd>
+    
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">manifests/init.pp</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p></p>
+  </div>
+</div>
+<div class="tags">
+  
+  
+  
+</div>
+<h2>Parameter Summary</h2>
+<div class="tags">
+  <ul class="param">
+    <li><span class="name">mpm </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::mpm_default</tt></li><li><span class="name">servertokens </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::servertokens_default</tt></li><li><span class="name">timeout </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::timeout_default</tt></li><li><span class="name">keepalive </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::keepalive_default</tt></li><li><span class="name">keepalivetimeout </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::keepalivetimeout_default</tt></li><li><span class="name">maxkeepalivereq </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::maxkeepalivereq_default</tt></li><li><span class="name">extendedstatus </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::extendedstatus_default</tt></li><li><span class="name">serversignature </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::serversignature_default</tt></li><li><span class="name">listen </span><span class="type">(<tt>Any</tt>)</span><tt> => [ '80' ]</tt></li><li><span class="name">namevirtualhosts </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">ssl </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt></li><li><span class="name">sni </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt></li><li><span class="name">ssl_honor_cipher_order </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt></li><li><span class="name">ssl_compression </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::ssl_compression_default</tt></li><li><span class="name">ssl_protocol </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::ssl_protocol_default</tt></li><li><span class="name">ssl_chiphersuite </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::ssl_chiphersuite_default</tt></li><li><span class="name">ssl_use_stapling </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt></li><li><span class="name">trace </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt></li><li><span class="name">version </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::version::default</tt></li><li><span class="name">apache_username </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::apache_username</tt></li><li><span class="name">apache_group </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::apache_group</tt></li><li><span class="name">server_admin </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::server_admin_default</tt></li><li><span class="name">directoty_index </span><span class="type">(<tt>Any</tt>)</span><tt> => [ 'index.html' ]</tt></li><li><span class="name">maxclients </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::maxclients_default</tt></li><li><span class="name">maxrequestsperchild </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::maxrequestsperchild_default</tt></li><li><span class="name">customlog_type </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::customlog_type_default</tt></li><li><span class="name">logformats </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">add_defult_logformats </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt></li><li><span class="name">server_name </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::server_name_default</tt></li><li><span class="name">manage_service </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt></li><li><span class="name">systemd_socket_activation </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt></li><li><span class="name">manage_docker_service </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt></li><li><span class="name">defaultcharset </span><span class="type">(<tt>Any</tt>)</span><tt> => 'UTF-8'</tt></li><li><span class="name">loglevel_errorlog </span><span class="type">(<tt>Any</tt>)</span><tt> => 'warn'</tt></li><li><span class="name">usecanonicalname </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt></li><li><span class="name">default_documentroot </span><span class="type">(<tt>Any</tt>)</span><tt> => '/var/www/html'</tt></li><li><span class="name">accessfilename </span><span class="type">(<tt>Any</tt>)</span><tt> => '.htaccess'</tt></li><li><span class="name">hostnamelookups </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt></li><li><span class="name">purge_logrotate </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt></li><li><span class="name">compress_logs_mtime </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">delete_logs_mtime </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">logdir </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::logdir</tt></li><li><span class="name">umask </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">startservers </span><span class="type">(<tt>Any</tt>)</span><tt> => '8'</tt></li><li><span class="name">minspareservers </span><span class="type">(<tt>Any</tt>)</span><tt> => '5'</tt></li><li><span class="name">maxspareservers </span><span class="type">(<tt>Any</tt>)</span><tt> => '20'</tt></li><li><span class="name">selinux_httpd_use_nfs </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt></li><li><span class="name">root_directory_deny </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt></li><li><span class="name">ssl_session_cache_type </span><span class="type">(<tt>Any</tt>)</span><tt> => 'shmcb'</tt></li><li><span class="name">ssl_session_cache_file </span><span class="type">(<tt>Any</tt>)</span><tt> => $apache::params::ssl_session_cache_file_default</tt></li><li><span class="name">ssl_session_cache_size </span><span class="type">(<tt>Any</tt>)</span><tt> => '512000'</tt></li><li><span class="name">add_conf_audit_rules </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt> - <div class="inline"><p> Add audit rules for httpd config files (default: false) </p></div></li>
+  </ul>
+</div>
+<div id="subclasses">
+  <h2>Direct Known Subclasses</h2>
+  <p class="children"><span class='object_link'><a href="apache/mod/davsvn.html" title="apache::mod::davsvn (hostclass)">apache::mod::davsvn</a></span>, <span class='object_link'><a href="apache/mod/authz/svn.html" title="apache::mod::authz::svn (hostclass)">apache::mod::authz::svn</a></span></p>
+</div>
+</div>
+
+      <div id="footer">
+  Generated on Mon Oct 23 15:03:20 2017 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.9 (ruby-2.1.9).
+</div>
+
+    </div>
+  </body>
+</html>

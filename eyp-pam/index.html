@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.9.9
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "README";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="puppet_manifest_list_link"
+        href="puppet_manifest_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'>
+<h1 id="label-pam">pam</h1>
+
+<h4 id="label-Table+of+Contents">Table of Contents</h4>
+<ol><li>
+<p><a href="#overview">Overview</a></p>
+</li><li>
+<p><a href="#module-description">Module Description</a></p>
+</li><li>
+<p><a href="#setup">Setup</a></p>
+<ul><li>
+<p><a href="#what-pam-affects">What pam affects</a></p>
+</li><li>
+<p><a href="#setup-requirements">Setup requirements</a></p>
+</li><li>
+<p><a href="#beginning-with-pam">Beginning with pam</a></p>
+</li></ul>
+</li><li>
+<p><a href="#usage">Usage</a></p>
+</li><li>
+<p><a href="#reference">Reference</a></p>
+</li><li>
+<p><a href="#limitations">Limitations</a></p>
+</li><li>
+<p><a href="#development">Development</a></p>
+<ul><li>
+<p><a href="#todo">TODO</a></p>
+</li><li>
+<p><a href="#contributing">Contributing</a></p>
+</li></ul>
+</li></ol>
+
+<h2 id="label-Overview">Overview</h2>
+
+<p>PAM modules, /etc/security/limits.conf and /etc/securetty management</p>
+
+<h2 id="label-Module+Description">Module Description</h2>
+
+<h3 id="label-pam%3A%3Alockout">pam::lockout</h3>
+
+<p>CIS compliance using pam_faillock for CentOS 6 and 7:</p>
+
+<pre class="code ruby"><code class="ruby"># cat /etc/pam.d/password-auth
+auth        required       pam_faillock.so preauth audit silent deny=5 unlock_time=900
+auth        include        password-auth-ac
+auth        [default=die]  pam_faillock.so authfail audit deny=5 unlock_time=900
+auth        sufficient     pam_faillock.so authsucc audit deny=5 unlock_time=900
+
+account     required       pam_faillock.so
+account     include        password-auth-ac
+
+password    include        password-auth-ac
+
+session     include        password-auth-ac</code></pre>
+
+<pre class="code ruby"><code class="ruby"># cat /etc/pam.d/system-auth
+auth        required       pam_faillock.so preauth audit silent deny=5 unlock_time=900
+auth        include        system-auth-ac
+auth        [default=die]  pam_faillock.so authfail audit deny=5 unlock_time=900
+auth        sufficient     pam_faillock.so authsucc audit deny=5 unlock_time=900
+
+account     required       pam_faillock.so
+account     include        system-auth-ac
+
+password    include        system-auth-ac
+
+session     include        system-auth-ac</code></pre>
+
+<h2 id="label-Setup">Setup</h2>
+
+<h3 id="label-What+pam+affects">What pam affects</h3>
+<ul><li>
+<p>/etc/security/limits.conf</p>
+</li><li>
+<p>system-auth config (/etc/pam.d)</p>
+</li></ul>
+
+<h3 id="label-Setup+Requirements">Setup Requirements</h3>
+
+<p>This module requires pluginsync enabled</p>
+
+<h3 id="label-Beginning+with+pam">Beginning with pam</h3>
+
+<h4 id="label-limits">limits</h4>
+
+<pre class="code ruby"><code class="ruby">class { &quot;limits&quot;: }
+
+limits::limit { &quot;nofile *&quot;:
+  domain =&gt; &quot;*&quot;,
+  item =&gt; &#39;nofile&#39;,
+  value =&gt; &#39;123456&#39;,
+}
+
+limits::limit { &quot;nproc *&quot;:
+  domain =&gt; &quot;*&quot;,
+  item =&gt; &#39;nproc&#39;,
+  value =&gt; &#39;123456&#39;,
+}
+</code></pre>
+
+<p>This will generate the following entries:</p>
+
+<pre class="code ruby"><code class="ruby">* - nofile 123456
+* - nproc 123456</code></pre>
+
+<h2 id="label-Usage">Usage</h2>
+
+<p>Put the classes, types, and resources for customizing, configuring, and
+doing the fancy stuff with your module here.</p>
+
+<h2 id="label-Reference">Reference</h2>
+
+<h3 id="label-defines">defines</h3>
+
+<h4 id="label-pam%3A%3Alimit">pam::limit</h4>
+
+<p>All items support the values -1, unlimited or infinity indicating no limit,
+except for priority and nice.</p>
+<ul><li>
+<p>domain: user, %group or * (means all)</p>
+</li><li>
+<p>type: soft, hard or - (means both)</p>
+</li><li>
+<p>item: can be one of the following:</p>
+</li><li>
+<p>core - limits the core file size (KB)</p>
+</li><li>
+<p>data - max data size (KB)</p>
+</li><li>
+<p>fsize - maximum filesize (KB)</p>
+</li><li>
+<p>memlock - max locked-in-memory address space (KB)</p>
+</li><li>
+<p>nofile - max number of open files</p>
+</li><li>
+<p>rss - max resident set size (KB)</p>
+</li><li>
+<p>stack - max stack size (KB)</p>
+</li><li>
+<p>cpu - max CPU time (MIN)</p>
+</li><li>
+<p>nproc - max number of processes</p>
+</li><li>
+<p>as - address space limit (KB)</p>
+</li><li>
+<p>maxlogins - max number of logins for this user</p>
+</li><li>
+<p>maxsyslogins - max number of logins on the system</p>
+</li><li>
+<p>priority - the priority to run user process with</p>
+</li><li>
+<p>locks - max number of file locks the user can hold</p>
+</li><li>
+<p>sigpending - max number of pending signals</p>
+</li><li>
+<p>msgqueue - max memory used by POSIX message queues (bytes)</p>
+</li><li>
+<p>nice - max nice priority allowed to raise to values: [-20, 19]</p>
+</li><li>
+<p>rtprio - max realtime priority</p>
+</li><li>
+<p>chroot - change root to directory (Debian-specific)</p>
+</li><li>
+<p>value: value for item</p>
+</li></ul>
+
+<h2 id="label-Limitations">Limitations</h2>
+
+<p>This is where you list OS compatibility, version compatibility, etc.</p>
+
+<h2 id="label-Development">Development</h2>
+
+<p>We are pushing to have acceptance testing in place, so any new feature
+should have some test to check both presence and absence of any feature</p>
+
+<h3 id="label-TODO">TODO</h3>
+
+<p>TODO list</p>
+
+<h3 id="label-Contributing">Contributing</h3>
+<ol><li>
+<p>Fork it</p>
+</li><li>
+<p>Create your feature branch (<code>git checkout -b my-new-feature</code>)</p>
+</li><li>
+<p>Commit your changes (<code>git commit -am &#39;Added some
+feature&#39;</code>)</p>
+</li><li>
+<p>Push to the branch (<code>git push origin my-new-feature</code>)</p>
+</li><li>
+<p>Create new Pull Request</p>
+</li></ol>
+</div></div>
+
+      <div id="footer">
+  Generated on Mon Oct 23 15:03:33 2017 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.9 (ruby-2.1.9).
+</div>
+
+    </div>
+  </body>
+</html>
