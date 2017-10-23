@@ -17,6 +17,11 @@ do
 	fi
 done
 
+for i in $(find $2 -maxdepth 1 -type d | grep -v "^.git$");
+do
+  echo "<a href=\"$i\">$i</a>" >> $2/index.html
+done
+
 cd $2
 git add --all
 git commit -m "refresh doc $(date)"
