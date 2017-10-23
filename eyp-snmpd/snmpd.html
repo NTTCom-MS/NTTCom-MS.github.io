@@ -90,11 +90,7 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>
-<h2 id="label-Class%3A+snmpd">Class: snmpd</h2>
-
-<h3 id="label-snmpd+documentation">snmpd documentation</h3>
-</p>
+    <p></p>
   </div>
 </div>
 <div class="tags">
@@ -105,7 +101,7 @@
 <h2>Parameter Summary</h2>
 <div class="tags">
   <ul class="param">
-    <li><span class="name">manage_package </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt></li><li><span class="name">package_ensure </span><span class="type">(<tt>Any</tt>)</span><tt> => 'installed'</tt></li><li><span class="name">manage_service </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt></li><li><span class="name">manage_docker_service </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt></li><li><span class="name">service_ensure </span><span class="type">(<tt>Any</tt>)</span><tt> => 'running'</tt></li><li><span class="name">service_enable </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt></li><li><span class="name">community </span><span class="type">(<tt>Any</tt>)</span><tt> => 'public'</tt></li><li><span class="name">subtree </span><span class="type">(<tt>Any</tt>)</span><tt> => [ '.1.3.6.1.2.1.1', '.1.3.6.1.2.1.25.1.1' ]</tt></li><li><span class="name">allowed_hosts </span><span class="type">(<tt>Any</tt>)</span><tt> => [ 'default' ]</tt></li><li><span class="name">syslocation </span><span class="type">(<tt>Any</tt>)</span><tt> => 'somewhere'</tt></li><li><span class="name">syscontact </span><span class="type">(<tt>Any</tt>)</span><tt> => 'someone'</tt></li>
+    <li><span class="name">manage_package </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt> - <div class="inline"><p> Selects if this puppet module manages the package (default: true) </p></div></li><li><span class="name">package_ensure </span><span class="type">(<tt>Any</tt>)</span><tt> => 'installed'</tt> - <div class="inline"><p> What state the package should be in (default: installed) </p></div></li><li><span class="name">manage_service </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt> - <div class="inline"><p> controls whether service definition should be managed by Puppet (default: true) </p></div></li><li><span class="name">manage_docker_service </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt> - <div class="inline"><p> controls whether service definition should be managed by Puppet in a docker container (default: true) </p></div></li><li><span class="name">service_ensure </span><span class="type">(<tt>Any</tt>)</span><tt> => 'running'</tt> - <div class="inline"><p> Whether a service should be running. Valid values are stopped (also called false), running (default: running) </p></div></li><li><span class="name">service_enable </span><span class="type">(<tt>Any</tt>)</span><tt> => true</tt> - <div class="inline"><p> Whether a service should be enabled to start at boot </p></div></li><li><span class="name">community </span><span class="type">(<tt>Any</tt>)</span><tt> => 'public'</tt></li><li><span class="name">subtree </span><span class="type">(<tt>Any</tt>)</span><tt> => [ '.1.3.6.1.2.1.1', '.1.3.6.1.2.1.25.1.1' ]</tt> - <div class="inline"><p> subtrees to publish (default: '.1.3.6.1.2.1.1', '.1.3.6.1.2.1.25.1.1') </p></div></li><li><span class="name">allowed_hosts </span><span class="type">(<tt>Any</tt>)</span><tt> => [ 'default' ]</tt> - <div class="inline"><p> list of allowed hosts </p></div></li><li><span class="name">syslocation </span><span class="type">(<tt>Any</tt>)</span><tt> => 'somewhere'</tt> - <div class="inline"><p> System contact information: location (default: somewhere) </p></div></li><li><span class="name">syscontact </span><span class="type">(<tt>Any</tt>)</span><tt> => 'someone'</tt> - <div class="inline"><p> System contact information: contact (default: someone) </p></div></li><li><strike><span class="name">SNMP </span><span class="type">(<tt>Unknown</tt>)</span> - <div class="inline"><p> comunity (default: public) </p></div></strike></li>
   </ul>
 </div>
 <div id="subclasses">
@@ -115,7 +111,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Oct 23 15:03:46 2017 by
+  Generated on Mon Oct 23 15:33:36 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.9 (ruby-2.1.9).
 </div>
