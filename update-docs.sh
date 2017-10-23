@@ -17,10 +17,12 @@ do
 	fi
 done
 
+echo "<html><head></head>" > $2/index.html
 for i in $(find $2 -maxdepth 1 -type d | grep -v "^.git$");
 do
   echo "<a href=\"$i\">$i</a>" >> $2/index.html
 done
+echo "</html>" > $2/index.html
 
 cd $2
 git add --all
